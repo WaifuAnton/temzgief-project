@@ -7,6 +7,7 @@ import java.util.Date;
 public class Product {
     private Long id;
     private String name;
+    private String picture;
     private Color color;
     private String description;
     private Double price;
@@ -29,6 +30,14 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public Color getColor() {
