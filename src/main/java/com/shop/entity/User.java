@@ -7,7 +7,7 @@ import java.util.Date;
 public class User {
     private Long id;
     private String email;
-    private Byte[] passwordHash;
+    private byte[] passwordHash;
     private String salt;
     private Role role;
     private Date createDate;
@@ -29,11 +29,11 @@ public class User {
         this.email = email;
     }
 
-    public Byte[] getPasswordHash() {
+    public byte[] getPasswordHash() {
         return passwordHash;
     }
 
-    public void setPasswordHash(Byte[] passwordHash) {
+    public void setPasswordHash(byte[] passwordHash) {
         this.passwordHash = passwordHash;
     }
 
@@ -55,6 +55,14 @@ public class User {
 
     public Date getCreateDate() {
         return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 
     public Date getLastUpdate() {

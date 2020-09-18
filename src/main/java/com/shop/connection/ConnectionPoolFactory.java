@@ -1,7 +1,6 @@
 package com.shop.connection;
 
 import com.shop.config.Constants;
-import com.shop.reader.MySQLPropertyReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
