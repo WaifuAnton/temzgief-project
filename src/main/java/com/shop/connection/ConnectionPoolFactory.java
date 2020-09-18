@@ -1,7 +1,7 @@
 package com.shop.connection;
 
 import com.shop.config.Constants;
-import com.shop.reader.PropertyReader;
+import com.shop.reader.MySQLPropertyReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,19 +13,14 @@ public class ConnectionPoolFactory {
             case Constants.MYSQL:
                 return MySQLConnectionPool.getInstance();
             default:
-                return getConnectionPool();
+                logger.fatal("Database {} is not supported", databaseType);
+                System.exit(-1);
+                return null;
         }
     }
 
     public ConnectionPool getConnectionPool() {
-        switch (PropertyReader.readType()) {
-            case Constants.MYSQL:
-                return MySQLConnectionPool.getInstance();
-            default:
-                logger.fatal("Database {} is not supported", PropertyReader.readType());
-                System.exit(-1);
-                return null;
-        }
+        return MySQLConnectionPool.getInstance();
     }
 
     private ConnectionPoolFactory() {

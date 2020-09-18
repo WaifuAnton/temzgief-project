@@ -1,7 +1,6 @@
 package com.shop.dao.factory;
 
 import com.shop.config.Constants;
-import com.shop.reader.PropertyReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,14 +8,7 @@ public abstract class DaoFactory {
     private static final Logger logger = LogManager.getLogger(DaoFactory.class);
 
     public static DaoFactory getDaoFactory() {
-        switch (PropertyReader.readType().toLowerCase()) {
-            case Constants.MYSQL:
-                return MySQLFactory.getInstance();
-            default:
-                logger.fatal("Database {} is not supported", PropertyReader.readType());
-                System.exit(-1);
-                return null;
-        }
+        return MySQLFactory.getInstance();
     }
 
     public static DaoFactory getDaoFactory(String databaseType) {
@@ -24,7 +16,9 @@ public abstract class DaoFactory {
             case Constants.MYSQL:
                 return MySQLFactory.getInstance();
             default:
-                return getDaoFactory();
+                logger.fatal("Database {} is not supported", databaseType);
+                System.exit(-1);
+                return null;
         }
     }
 }
