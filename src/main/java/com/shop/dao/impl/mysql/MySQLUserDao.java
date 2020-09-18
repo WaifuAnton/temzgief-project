@@ -1,11 +1,11 @@
-package com.shop.dao.impl;
+package com.shop.dao.impl.mysql;
 
 import com.shop.dao.UserDao;
 import com.shop.entity.User;
 
 import java.util.List;
 
-public class UserDaoImpl implements UserDao {
+public class MySQLUserDao implements UserDao {
     @Override
     public User getByEmail(String email) {
         return null;
