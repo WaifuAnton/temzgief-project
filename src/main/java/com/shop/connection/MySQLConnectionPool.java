@@ -12,7 +12,7 @@ public class MySQLConnectionPool implements ConnectionPool {
 
     private static MySQLConnectionPool connectionPool;
 
-    private final ComboPooledDataSource dataSource = new ComboPooledDataSource();
+    private final ComboPooledDataSource dataSource;
 
     public static synchronized MySQLConnectionPool getInstance() {
         if (connectionPool == null)
@@ -21,6 +21,7 @@ public class MySQLConnectionPool implements ConnectionPool {
     }
 
     private MySQLConnectionPool() {
+        dataSource = new ComboPooledDataSource();
         try {
             dataSource.setDriverClass("com.mysql.jdbc.Driver");
             dataSource.setJdbcUrl("jdbc:mysql://" + MySQLPropertyReader.readUrl() + ':' + MySQLPropertyReader.readPort());
