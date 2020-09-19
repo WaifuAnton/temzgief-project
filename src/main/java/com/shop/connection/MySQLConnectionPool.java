@@ -24,7 +24,7 @@ public class MySQLConnectionPool implements ConnectionPool {
         dataSource = new ComboPooledDataSource();
         try {
             dataSource.setDriverClass("com.mysql.jdbc.Driver");
-            dataSource.setJdbcUrl("jdbc:mysql://" + MySQLPropertyReader.readUrl() + ':' + MySQLPropertyReader.readPort());
+            dataSource.setJdbcUrl("jdbc:mysql://" + MySQLPropertyReader.readUrl());
             dataSource.setUser(MySQLPropertyReader.readUser());
             dataSource.setPassword(MySQLPropertyReader.readPassword());
         } catch (PropertyVetoException e) {

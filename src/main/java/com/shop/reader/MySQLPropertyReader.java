@@ -29,12 +29,8 @@ public class MySQLPropertyReader {
         return properties.getProperty("mysql.password");
     }
 
-    public static String readPort() {
-        return properties.getProperty("mysql.port", Constants.DEFAULT_DB_PORT);
-    }
-
     public static String readUrl() {
-        return properties.getProperty("mysql.url", Constants.DEFAULT_DB_URL);
+        return properties.getProperty("mysql.url");
     }
 
     public static String readPoolSize() {
