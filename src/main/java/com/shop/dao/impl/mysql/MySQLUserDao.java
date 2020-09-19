@@ -49,7 +49,7 @@ public class MySQLUserDao implements UserDao {
     }
 
     @Override
-    public boolean insert(User element) throws SQLException {
+    public void insert(User element) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("INSERT INTO USERS (EMAIL, PASSWORD_HASH, SALT, ROLE) VALUES (?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
 
@@ -62,29 +62,19 @@ public class MySQLUserDao implements UserDao {
                 if (resultSet.next())
                     element.setId(resultSet.getLong(1));
             }
-            return true;
-        }
-        catch (SQLIntegrityConstraintViolationException e) {
-            return false;
         }
     }
 
     @Override
-    public boolean update(User element) throws SQLException {
-        User user = getById(element.getId()).orElseThrow(() -> new IllegalArgumentException("No user with id " + element.getId()));
-        if (user.equalsAll(element))
-            return false;
-
+    public void update(User element) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("UPDATE USERS SET EMAIL = ?, PASSWORD_HASH = ?, SALT = ?, ROLE = ? WHERE ID = ?")) {
-
             statement.setString(1, element.getEmail());
             statement.setBytes(2, element.getPasswordHash());
             statement.setString(3, element.getSalt());
             statement.setString(4, element.getRole().toString());
             statement.setLong(5, element.getId());
             statement.execute();
-            return true;
         }
     }
 
