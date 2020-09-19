@@ -12,7 +12,7 @@ public class MySQLConnectionPool implements ConnectionPool {
 
     private static MySQLConnectionPool connectionPool;
 
-    ComboPooledDataSource dataSource = new ComboPooledDataSource();
+    private final ComboPooledDataSource dataSource = new ComboPooledDataSource();
 
     public static synchronized MySQLConnectionPool getInstance() {
         if (connectionPool == null)

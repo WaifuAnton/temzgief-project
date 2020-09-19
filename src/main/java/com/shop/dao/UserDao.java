@@ -2,6 +2,9 @@ package com.shop.dao;
 
 import com.shop.entity.User;
 
+import java.sql.SQLException;
+import java.util.Optional;
+
 public interface UserDao extends Dao<User> {
-    User getByEmail(String email);
+    Optional<User> getByEmail(String email) throws SQLException;
 }

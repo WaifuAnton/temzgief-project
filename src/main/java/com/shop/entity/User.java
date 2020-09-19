@@ -2,7 +2,9 @@ package com.shop.entity;
 
 import com.shop.enumeration.Role;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 
 public class User {
     private Long id;
@@ -67,5 +69,12 @@ public class User {
 
     public Date getLastUpdate() {
         return lastUpdate;
+    }
+
+    public boolean equalsAll(User user) {
+        return email.equals(user.email) &&
+                Arrays.equals(passwordHash, user.passwordHash) &&
+                salt.equals(user.salt) &&
+                role == user.role;
     }
 }

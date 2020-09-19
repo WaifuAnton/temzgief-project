@@ -2,6 +2,8 @@ package com.shop.dao;
 
 import com.shop.entity.Product;
 
+import java.util.Optional;
+
 public interface ProductDao extends Dao<Product> {
-    Product getByName(String name);
+    Optional<Product> getByName(String name);
 }

@@ -6,65 +6,126 @@ import com.shop.dao.UserDao;
 import com.shop.entity.User;
 import com.shop.enumeration.Role;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public class MySQLUserDao implements UserDao {
     private final ComboPooledDataSource dataSource = MySQLConnectionPool.getInstance().getDataSource();
 
     @Override
-    public User getByEmail(String email) {
-        return null;
+    public Optional<User> getByEmail(String email) throws SQLException {
+        User user;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS WHERE EMAIL = ?")) {
+            statement.setString(1, email);
+            user = createUserFromStatement(statement);
+        }
+        return Optional.ofNullable(user);
     }
 
     @Override
-    public User getById(long id) throws SQLException {
-        User user = null;
-        try (Connection connection = getConnection();
+    public Optional<User> getById(long id) throws SQLException {
+        User user;
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS WHERE ID = ?")) {
             statement.setLong(1, id);
+            user = createUserFromStatement(statement);
+        }
+        return Optional.ofNullable(user);
+    }
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    user = new User();
-                    user.setId(resultSet.getLong("id"));
-                    user.setEmail(resultSet.getString("email"));
-                    user.setPasswordHash(resultSet.getBytes("password_hash"));
-                    user.setSalt(resultSet.getString("salt"));
-                    user.setRole(Role.valueOf(resultSet.getString("role").toUpperCase()));
-                    user.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
-                    user.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
-                }
+    @Override
+    public List<User> findAll() throws SQLException {
+        List<User> users;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS")) {
+            users = createUsersFromStatement(statement);
+        }
+        return users;
+    }
+
+    @Override
+    public boolean insert(User element) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO USERS (EMAIL, PASSWORD_HASH, SALT, ROLE) VALUES (?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+
+            statement.setString(1, element.getEmail());
+            statement.setBytes(2, element.getPasswordHash());
+            statement.setString(3, element.getSalt());
+            statement.setString(4, element.getRole().toString());
+
+            try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                if (resultSet.next())
+                    element.setId(resultSet.getLong(1));
+            }
+            return true;
+        }
+        catch (SQLIntegrityConstraintViolationException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean update(User element) throws SQLException {
+        User user = getById(element.getId()).orElseThrow(() -> new IllegalArgumentException("No user with id " + element.getId()));
+        if (user.equalsAll(element))
+            return false;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("UPDATE USERS SET EMAIL = ?, PASSWORD_HASH = ?, SALT = ?, ROLE = ? WHERE ID = ?")) {
+
+            statement.setString(1, element.getEmail());
+            statement.setBytes(2, element.getPasswordHash());
+            statement.setString(3, element.getSalt());
+            statement.setString(4, element.getRole().toString());
+            statement.setLong(5, element.getId());
+            statement.execute();
+            return true;
+        }
+    }
+
+    @Override
+    public void delete(User element) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("DELETE FROM USERS WHERE ID = ?")) {
+            statement.setLong(1, element.getId());
+            statement.execute();
+        }
+    }
+
+    private User createUserFromStatement(PreparedStatement statement) throws SQLException {
+        User user = null;
+        try (ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                user = new User();
+                setUpFieldsFromResultSet(user, resultSet);
             }
         }
         return user;
     }
 
-    @Override
-    public List<User> findAll() {
-        return null;
+    private List<User> createUsersFromStatement(PreparedStatement statement) throws SQLException {
+        List<User> users = new ArrayList<>();
+        try (ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                User user = new User();
+                setUpFieldsFromResultSet(user, resultSet);
+                users.add(user);
+            }
+        }
+        return users;
     }
 
-    @Override
-    public boolean insert(User element) {
-        return false;
-    }
-
-    @Override
-    public boolean update(User element) {
-        return false;
-    }
-
-    @Override
-    public void delete(User element) {
-
-    }
-
-    private Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+    private void setUpFieldsFromResultSet(User user, ResultSet resultSet) throws SQLException {
+        user.setId(resultSet.getLong("id"));
+        user.setEmail(resultSet.getString("email"));
+        user.setPasswordHash(resultSet.getBytes("password_hash"));
+        user.setSalt(resultSet.getString("salt"));
+        user.setRole(Role.valueOf(resultSet.getString("role").toUpperCase()));
+        user.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
+        user.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
     }
 }

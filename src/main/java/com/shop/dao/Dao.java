@@ -1,14 +1,13 @@
 package com.shop.dao;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public interface Dao<E> {
-    E getById(long id) throws SQLException;
-    List<E> findAll();
-    boolean insert(E element);
-    boolean update(E element);
-    void delete(E element);
+    Optional<E> getById(long id) throws SQLException;
+    List<E> findAll() throws SQLException;
+    boolean insert(E element) throws SQLException;
+    boolean update(E element) throws SQLException;
+    void delete(E element) throws SQLException;
 }
