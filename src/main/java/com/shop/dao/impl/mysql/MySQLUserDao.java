@@ -1,7 +1,8 @@
 package com.shop.dao.impl.mysql;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.shop.connection.MySQLConnectionPool;
+import com.shop.config.Constants;
+import com.shop.connection.ConnectionPoolFactory;
 import com.shop.dao.UserDao;
 import com.shop.entity.User;
 import com.shop.enumeration.Role;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class MySQLUserDao implements UserDao {
-    private final ComboPooledDataSource dataSource = MySQLConnectionPool.getInstance().getDataSource();
+    private final ComboPooledDataSource dataSource = ConnectionPoolFactory.getConnectionPool(Constants.MYSQL).getDataSource();
 
     @Override
     public Optional<User> getByEmail(String email) throws SQLException {

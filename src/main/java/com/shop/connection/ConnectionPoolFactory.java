@@ -4,10 +4,10 @@ import com.shop.config.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ConnectionPoolFactory {
+public abstract class ConnectionPoolFactory {
     private static final Logger logger = LogManager.getLogger(ConnectionPoolFactory.class);
 
-    public ConnectionPool getConnectionPool(String databaseType) {
+    public static ConnectionPool getConnectionPool(String databaseType) {
         switch (databaseType.toLowerCase()) {
             case Constants.MYSQL:
                 return MySQLConnectionPool.getInstance();
@@ -18,7 +18,7 @@ public class ConnectionPoolFactory {
         }
     }
 
-    public ConnectionPool getConnectionPool() {
+    public static ConnectionPool getConnectionPool() {
         return MySQLConnectionPool.getInstance();
     }
 
