@@ -5,8 +5,6 @@ import com.shop.connection.ConnectionPool;
 import com.shop.connection.ConnectionPoolFactory;
 import com.shop.dao.CategoryDao;
 import com.shop.entity.Category;
-import com.shop.entity.User;
-import com.shop.enumeration.Role;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
