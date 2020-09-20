@@ -2,12 +2,8 @@ package com.shop.connection;
 
 import com.shop.reader.MySQLPropertyReader;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class MySQLConnectionPool implements ConnectionPool {
-    private static final Logger logger = LogManager.getLogger(MySQLConnectionPool.class);
-
     private static MySQLConnectionPool connectionPool;
 
     private final BasicDataSource dataSource;
