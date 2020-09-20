@@ -11,6 +11,8 @@ public abstract class ConnectionPoolFactory {
         switch (databaseType.toLowerCase()) {
             case Constants.MYSQL:
                 return MySQLConnectionPool.getInstance();
+            case Constants.H2:
+                return H2ConnectionPool.getInstance();
             default:
                 logger.fatal("Database {} is not supported", databaseType);
                 System.exit(-1);

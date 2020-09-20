@@ -7,6 +7,7 @@ public final class Constants {
     public static final String DEFAULT_DB_POOL_SIZE = "10";
 
     public static final String MYSQL = "mysql";
+    public static final String H2 = "h2";
 
     private Constants() {
         //can`t create instance

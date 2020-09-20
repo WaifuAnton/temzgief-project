@@ -1,4 +1,4 @@
-package com.shop.dao.impl.mysql;
+package com.shop.dao.impl.h2;
 
 import com.shop.config.Constants;
 import com.shop.connection.ConnectionPoolFactory;
@@ -13,14 +13,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public class MySQLUserDao implements UserDao {
-    private final BasicDataSource dataSource = ConnectionPoolFactory.getConnectionPool(Constants.MYSQL).getDataSource();
+public class H2UserDao implements UserDao {
+    private final BasicDataSource dataSource = ConnectionPoolFactory.getConnectionPool(Constants.H2).getDataSource();
 
     @Override
     public Optional<User> getByEmail(String email) throws SQLException {
         User user;
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS WHERE EMAIL = ?")) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"users\" WHERE \"email\" = ?")) {
             statement.setString(1, email);
             user = createUserFromStatement(statement);
         }
@@ -31,7 +31,7 @@ public class MySQLUserDao implements UserDao {
     public Optional<User> getById(long id) throws SQLException {
         User user;
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS WHERE ID = ?")) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"users\" WHERE \"id\" = ?")) {
             statement.setLong(1, id);
             user = createUserFromStatement(statement);
         }
@@ -42,7 +42,7 @@ public class MySQLUserDao implements UserDao {
     public List<User> findAll() throws SQLException {
         List<User> users;
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS")) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"users\"")) {
             users = createUsersFromStatement(statement);
         }
         return users;
@@ -51,7 +51,7 @@ public class MySQLUserDao implements UserDao {
     @Override
     public void insert(User element) throws SQLException {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("INSERT INTO USERS (EMAIL, PASSWORD_HASH, SALT, ROLE) VALUES (?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO \"users\" (\"email\", \"password_hash\", \"salt\", \"role\") VALUES (?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             insertOrUpdate(element, statement);
             try (ResultSet resultSet = statement.getGeneratedKeys()) {
@@ -64,7 +64,7 @@ public class MySQLUserDao implements UserDao {
     @Override
     public void update(User element) throws SQLException {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("UPDATE USERS SET EMAIL = ?, PASSWORD_HASH = ?, SALT = ?, ROLE = ? WHERE ID = ?")) {
+             PreparedStatement statement = connection.prepareStatement("UPDATE \"users\" SET \"email\" = ?, \"password_hash\" = ?, \"salt\" = ?, \"role\" = ? WHERE \"id\" = ?")) {
             insertOrUpdate(element, statement);
         }
     }
@@ -72,7 +72,7 @@ public class MySQLUserDao implements UserDao {
     @Override
     public void delete(User element) throws SQLException {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("DELETE FROM USERS WHERE ID = ?")) {
+             PreparedStatement statement = connection.prepareStatement("DELETE FROM \"users\" WHERE \"id\" = ?")) {
             statement.setLong(1, element.getId());
             statement.execute();
         }

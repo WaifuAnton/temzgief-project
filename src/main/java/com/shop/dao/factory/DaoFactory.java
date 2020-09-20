@@ -16,6 +16,8 @@ public abstract class DaoFactory {
         switch (databaseType.toLowerCase()) {
             case Constants.MYSQL:
                 return MySQLFactory.getInstance();
+            case Constants.H2:
+                return H2Factory.getInstance();
             default:
                 logger.fatal("Database {} is not supported", databaseType);
                 System.exit(-1);
