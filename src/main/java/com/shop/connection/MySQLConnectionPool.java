@@ -1,7 +1,7 @@
 package com.shop.connection;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.shop.reader.MySQLPropertyReader;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,7 +12,7 @@ public class MySQLConnectionPool implements ConnectionPool {
 
     private static MySQLConnectionPool connectionPool;
 
-    private final ComboPooledDataSource dataSource;
+    private final BasicDataSource dataSource;
 
     public static synchronized MySQLConnectionPool getInstance() {
         if (connectionPool == null)
@@ -21,20 +21,15 @@ public class MySQLConnectionPool implements ConnectionPool {
     }
 
     private MySQLConnectionPool() {
-        dataSource = new ComboPooledDataSource();
-        try {
-            dataSource.setDriverClass("com.mysql.jdbc.Driver");
-            dataSource.setJdbcUrl("jdbc:mysql://" + MySQLPropertyReader.readUrl());
-            dataSource.setUser(MySQLPropertyReader.readUser());
+        dataSource = new BasicDataSource();
+            dataSource.setUrl("jdbc:mysql://" + MySQLPropertyReader.readUrl());
+            dataSource.setUsername(MySQLPropertyReader.readUser());
             dataSource.setPassword(MySQLPropertyReader.readPassword());
-        } catch (PropertyVetoException e) {
-            logger.fatal("Error loading driver", e);
-            System.exit(-1);
-        }
+
     }
 
     @Override
-    public ComboPooledDataSource getDataSource() {
+    public BasicDataSource getDataSource() {
         return dataSource;
     }
 }

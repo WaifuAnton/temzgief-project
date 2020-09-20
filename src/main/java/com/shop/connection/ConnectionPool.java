@@ -1,7 +1,7 @@
 package com.shop.connection;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 public interface ConnectionPool {
-    ComboPooledDataSource getDataSource();
+    BasicDataSource getDataSource();
 }
