@@ -87,4 +87,12 @@ public class Product {
     public Date getLastUpdate() {
         return lastUpdate;
     }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
 }

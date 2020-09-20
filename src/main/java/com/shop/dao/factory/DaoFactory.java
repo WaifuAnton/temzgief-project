@@ -1,6 +1,8 @@
 package com.shop.dao.factory;
 
 import com.shop.config.Constants;
+import com.shop.dao.CategoryDao;
+import com.shop.dao.ProductDao;
 import com.shop.dao.UserDao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,4 +43,6 @@ public abstract class DaoFactory {
     }
 
     public abstract UserDao getUserDao();
+    public abstract ProductDao getProductDao();
+    public abstract CategoryDao getCategoryDao();
 }

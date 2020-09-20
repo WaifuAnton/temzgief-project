@@ -1,6 +1,7 @@
 package com.shop.dao.impl.mysql;
 
 import com.shop.config.Constants;
+import com.shop.connection.ConnectionPool;
 import com.shop.connection.ConnectionPoolFactory;
 import com.shop.dao.UserDao;
 import com.shop.entity.User;
@@ -14,7 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class MySQLUserDao implements UserDao {
-    private final BasicDataSource dataSource = ConnectionPoolFactory.getConnectionPool(Constants.MYSQL).getDataSource();
+    private final ConnectionPool connectionPool = ConnectionPoolFactory.getConnectionPool(Constants.MYSQL);
+    private final BasicDataSource dataSource = connectionPool.getDataSource();
 
     @Override
     public Optional<User> getByEmail(String email) throws SQLException {
@@ -52,7 +54,6 @@ public class MySQLUserDao implements UserDao {
     public void insert(User element) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("INSERT INTO USERS (EMAIL, PASSWORD_HASH, SALT, ROLE) VALUES (?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
-
             insertOrUpdate(element, statement);
             try (ResultSet resultSet = statement.getGeneratedKeys()) {
                 if (resultSet.next())
@@ -92,7 +93,7 @@ public class MySQLUserDao implements UserDao {
         try (ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
                 user = new User();
-                setUpFieldsFromResultSet(user, resultSet);
+                setUpFields(user, resultSet);
             }
         }
         return user;
@@ -103,14 +104,14 @@ public class MySQLUserDao implements UserDao {
         try (ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 User user = new User();
-                setUpFieldsFromResultSet(user, resultSet);
+                setUpFields(user, resultSet);
                 users.add(user);
             }
         }
         return users;
     }
 
-    private void setUpFieldsFromResultSet(User user, ResultSet resultSet) throws SQLException {
+    private void setUpFields(User user, ResultSet resultSet) throws SQLException {
         user.setId(resultSet.getLong("id"));
         user.setEmail(resultSet.getString("email"));
         user.setPasswordHash(resultSet.getBytes("password_hash"));
