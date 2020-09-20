@@ -1,6 +1,7 @@
 package com.shop.dao.factory;
 
 import com.shop.config.Constants;
+import com.shop.dao.UserDao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,4 +22,6 @@ public abstract class DaoFactory {
                 return null;
         }
     }
+
+    public abstract UserDao getUserDao();
 }
