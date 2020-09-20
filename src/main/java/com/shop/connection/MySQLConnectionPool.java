@@ -5,8 +5,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.beans.PropertyVetoException;
-
 public class MySQLConnectionPool implements ConnectionPool {
     private static final Logger logger = LogManager.getLogger(MySQLConnectionPool.class);
 
