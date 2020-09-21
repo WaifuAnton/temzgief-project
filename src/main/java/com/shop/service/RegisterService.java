@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
@@ -19,7 +20,7 @@ public class RegisterService implements Service {
     private final UserDao userDao = DaoFactory.getDaoFactory().getUserDao();
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) {
+    public String execute(HttpServletRequest request, HttpServletResponse response) {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         try {
@@ -34,10 +35,14 @@ public class RegisterService implements Service {
         }
         catch (SQLIntegrityConstraintViolationException e) {
             request.setAttribute("notAdded", "User already exists");
+            response.reset();
+            return "register.jsp";
         }
         catch (SQLException throwables) {
             logger.error("Unpredictable SQL exception has occurred", throwables);
             response.setStatus(500);
+            return null;
         }
+        return "register.jsp";
     }
 }

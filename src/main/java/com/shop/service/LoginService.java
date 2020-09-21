@@ -20,7 +20,7 @@ public class LoginService implements Service {
     private final UserDao userDao = DaoFactory.getDaoFactory().getUserDao();
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) {
+    public String execute(HttpServletRequest request, HttpServletResponse response) {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         try {
@@ -32,17 +32,18 @@ public class LoginService implements Service {
                 byte[] expected = UserSecurity.hashPassword(password, salt);
                 if (!Arrays.equals(expected, hash)) {
                     request.setAttribute("wrongEmailOrPassword", "Wrong email or password");
-                    response.sendRedirect("/login.jsp");
+                    return "login.jsp";
                 }
             }
-            else
+            else {
                 request.setAttribute("wrongEmailOrPassword", "Wrong email or password");
+                return "login.jsp";
+            }
+            return "login.jsp";
         } catch (SQLException throwables) {
             logger.error("Unpredictable SQL exception has occurred", throwables);
             response.setStatus(500);
-        }
-        catch (IOException e) {
-            logger.error("Unpredictable IO exception has occurred");
+            return null;
         }
     }
 }

@@ -12,6 +12,12 @@ import java.io.IOException;
 
 public class RegisterController extends HttpServlet {
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Service service = ServiceFactory.getService(Constants.REGISTER);
+        service.execute(req, resp);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Service service = ServiceFactory.getService(Constants.REGISTER);
         service.execute(req, resp);
