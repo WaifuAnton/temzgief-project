@@ -17,6 +17,7 @@ public final class Constants {
     public static final String DIGEST_ALGORITHM = "SHA-256";
 
     public static final String REGISTER = "register";
+    public static final String LOGIN = "login";
 
     private Constants() {
         //can`t create instance

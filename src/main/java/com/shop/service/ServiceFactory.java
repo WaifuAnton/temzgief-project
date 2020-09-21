@@ -11,6 +11,8 @@ public abstract class ServiceFactory {
         switch (serviceName.toLowerCase()) {
             case Constants.REGISTER:
                 return new RegisterService();
+            case Constants.LOGIN:
+                return new LoginService();
             default:
                 logger.fatal("No service with name {}", serviceName);
                 System.exit(-1);

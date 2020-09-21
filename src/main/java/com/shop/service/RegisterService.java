@@ -16,12 +16,13 @@ import java.sql.SQLIntegrityConstraintViolationException;
 public class RegisterService implements Service {
     private static final Logger logger = LogManager.getLogger(RegisterService.class);
 
+    private final UserDao userDao = DaoFactory.getDaoFactory().getUserDao();
+
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         try {
-            UserDao userDao = DaoFactory.getDaoFactory().getUserDao();
             User user = new User();
             user.setEmail(email);
             String salt = UserSecurity.generateSalt();
