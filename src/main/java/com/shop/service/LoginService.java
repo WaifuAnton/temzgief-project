@@ -32,14 +32,14 @@ public class LoginService implements Service {
                 byte[] expected = UserSecurity.hashPassword(password, salt);
                 if (!Arrays.equals(expected, hash)) {
                     request.setAttribute("wrongEmailOrPassword", "Wrong email or password");
-                    return "login.jsp";
+                    return "login";
                 }
             }
             else {
                 request.setAttribute("wrongEmailOrPassword", "Wrong email or password");
-                return "login.jsp";
+                return "login";
             }
-            return "login.jsp";
+            return "index.jsp";
         } catch (SQLException throwables) {
             logger.error("Unpredictable SQL exception has occurred", throwables);
             response.setStatus(500);

@@ -32,17 +32,16 @@ public class RegisterService implements Service {
             userDao.insert(user);
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
+            return "index.jsp";
         }
         catch (SQLIntegrityConstraintViolationException e) {
             request.setAttribute("notAdded", "User already exists");
-            response.reset();
-            return "register.jsp";
+            return "register";
         }
         catch (SQLException throwables) {
             logger.error("Unpredictable SQL exception has occurred", throwables);
             response.setStatus(500);
             return null;
         }
-        return "register.jsp";
     }
 }
