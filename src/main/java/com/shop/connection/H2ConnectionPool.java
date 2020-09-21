@@ -16,7 +16,7 @@ public class H2ConnectionPool implements ConnectionPool {
 
     private H2ConnectionPool() {
         dataSource = new BasicDataSource();
-        dataSource.setUrl(H2PropertyReader.readUrl() + ";INIT=RUNSCRIPT FROM '" + H2PropertyReader.readScript() + "'");
+        dataSource.setUrl("jdbc:h2:" + H2PropertyReader.readUrl() + ";INIT=RUNSCRIPT FROM '" + H2PropertyReader.readScript() + "'");
     }
 
     @Override

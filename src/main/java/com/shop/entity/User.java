@@ -4,14 +4,13 @@ import com.shop.enumeration.Role;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Objects;
 
 public class User {
     private Long id;
     private String email;
     private byte[] passwordHash;
     private String salt;
-    private Role role;
+    private Role role = Role.CUSTOMER;
     private Date createDate;
     private Date lastUpdate;
 

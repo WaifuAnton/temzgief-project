@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class MySQLCategoryDao implements CategoryDao {
-    private final ConnectionPool connectionPool = ConnectionPoolFactory.getConnectionPool(Constants.MYSQL);
+    private final ConnectionPool connectionPool = ConnectionPoolFactory.getConnectionPool();
     private final BasicDataSource dataSource = connectionPool.getDataSource();
 
     @Override

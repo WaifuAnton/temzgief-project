@@ -5,9 +5,7 @@ import com.shop.connection.ConnectionPool;
 import com.shop.connection.ConnectionPoolFactory;
 import com.shop.dao.CategoryDao;
 import com.shop.dao.ProductDao;
-import com.shop.dao.UserDao;
 import com.shop.dao.factory.DaoFactory;
-import com.shop.dao.factory.MySQLFactory;
 import com.shop.entity.Product;
 import com.shop.enumeration.Color;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -20,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class MySQLProductDao implements ProductDao {
-    private final ConnectionPool connectionPool = ConnectionPoolFactory.getConnectionPool(Constants.MYSQL);
+    private final ConnectionPool connectionPool = ConnectionPoolFactory.getConnectionPool();
     private final BasicDataSource dataSource = connectionPool.getDataSource();
 
     private final DaoFactory factory = DaoFactory.getDaoFactory(Constants.MYSQL);

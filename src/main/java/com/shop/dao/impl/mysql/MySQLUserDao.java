@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class MySQLUserDao implements UserDao {
-    private final ConnectionPool connectionPool = ConnectionPoolFactory.getConnectionPool(Constants.MYSQL);
+    private final ConnectionPool connectionPool = ConnectionPoolFactory.getConnectionPool();
     private final BasicDataSource dataSource = connectionPool.getDataSource();
 
     @Override
@@ -84,7 +84,6 @@ public class MySQLUserDao implements UserDao {
         statement.setBytes(2, element.getPasswordHash());
         statement.setString(3, element.getSalt());
         statement.setString(4, element.getRole().toString());
-        statement.setLong(5, element.getId());
         statement.execute();
     }
 

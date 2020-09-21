@@ -16,19 +16,19 @@ import org.apache.logging.log4j.Logger;
 public abstract class DaoFactory {
     private static final Logger logger = LogManager.getLogger(DaoFactory.class);
 
-    /**
-     * Returns {@code DaoFactory} for MySQL database.
-     * @return instance of {@code MySQLFactory}
-     */
     public static DaoFactory getDaoFactory() {
-        return MySQLFactory.getInstance();
+        switch (Constants.DATABASE_TYPE.toLowerCase()) {
+            case Constants.MYSQL:
+                return MySQLFactory.getInstance();
+            case Constants.H2:
+                return H2Factory.getInstance();
+            default:
+                logger.fatal("Database {} is not supported", Constants.DATABASE_TYPE);
+                System.exit(-1);
+                return null;
+        }
     }
 
-    /**
-     * Returns {@code DaoFactory} for one of supported databases. If an appropriate DAO factory is not found, the program exits with status code -1.
-     * @param databaseType name of one of supported database types. Supported types are MySQL for deployment and H2 for test.
-     * @return instance of {@code MySQLFactory} or {@code H2Factory}
-     */
     public static DaoFactory getDaoFactory(String databaseType) {
         switch (databaseType.toLowerCase()) {
             case Constants.MYSQL:
@@ -36,9 +36,7 @@ public abstract class DaoFactory {
             case Constants.H2:
                 return H2Factory.getInstance();
             default:
-                logger.fatal("Database {} is not supported", databaseType);
-                System.exit(-1);
-                return null;
+                return getDaoFactory();
         }
     }
 

@@ -1,6 +1,6 @@
 package com.shop.connection;
 
-import com.shop.reader.MySQLPropertyReader;
+import com.shop.reader.DatabasePropertyReader;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 public class MySQLConnectionPool implements ConnectionPool {
@@ -16,10 +16,10 @@ public class MySQLConnectionPool implements ConnectionPool {
 
     private MySQLConnectionPool() {
         dataSource = new BasicDataSource();
-        dataSource.setUrl("jdbc:mysql://" + MySQLPropertyReader.readUrl());
-        dataSource.setUsername(MySQLPropertyReader.readUser());
-        dataSource.setPassword(MySQLPropertyReader.readPassword());
-        dataSource.setInitialSize(Integer.parseInt(MySQLPropertyReader.readPoolSize()));
+        dataSource.setUrl("jdbc:mysql://" + DatabasePropertyReader.readUrl());
+        dataSource.setUsername(DatabasePropertyReader.readUser());
+        dataSource.setPassword(DatabasePropertyReader.readPassword());
+        dataSource.setInitialSize(Integer.parseInt(DatabasePropertyReader.readPoolSize()));
     }
 
     @Override
