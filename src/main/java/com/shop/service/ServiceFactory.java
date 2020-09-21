@@ -4,19 +4,30 @@ import com.shop.config.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class ServiceFactory {
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+
+public class ServiceFactory {
     private static final Logger logger = LogManager.getLogger(ServiceFactory.class);
 
-    public static Service getService(String serviceName) {
-        switch (serviceName.toLowerCase()) {
-            case Constants.REGISTER:
-                return new RegisterService();
-            case Constants.LOGIN:
-                return new LoginService();
-            default:
-                logger.fatal("No service with name {}", serviceName);
-                System.exit(-1);
-                return null;
-        }
+    private static ServiceFactory instance;
+
+    private final Map<String, Service> services;
+
+    public static synchronized ServiceFactory getInstance() {
+        if (instance == null)
+            instance = new ServiceFactory();
+        return instance;
+    }
+
+    private ServiceFactory() {
+        services = new HashMap<>();
+        services.put("login", new LoginService());
+        services.put("register", new RegisterService());
+    }
+
+    public Service getService(HttpServletRequest request) {
+        return services.get(request.getParameter("action"));
     }
 }

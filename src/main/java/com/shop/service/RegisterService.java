@@ -20,7 +20,7 @@ public class RegisterService implements Service {
     private final UserDao userDao = DaoFactory.getDaoFactory().getUserDao();
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) {
+    public String execute(HttpServletRequest request) {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         try {
@@ -36,11 +36,10 @@ public class RegisterService implements Service {
         }
         catch (SQLIntegrityConstraintViolationException e) {
             request.setAttribute("notAdded", "User already exists");
-            return "register";
+            return "controller?action=main";
         }
         catch (SQLException throwables) {
             logger.error("Unpredictable SQL exception has occurred", throwables);
-            response.setStatus(500);
             return null;
         }
     }
