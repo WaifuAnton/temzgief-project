@@ -1,16 +1,14 @@
 package com.shop.dao.impl.mysql;
 
-import com.shop.config.Constants;
 import com.shop.connection.ConnectionPool;
 import com.shop.connection.ConnectionPoolFactory;
 import com.shop.dao.CategoryDao;
 import com.shop.dao.ProductDao;
 import com.shop.dao.factory.DaoFactory;
 import com.shop.entity.Product;
-import com.shop.entity.User;
 import com.shop.enumeration.Color;
-import com.shop.enumeration.Role;
 import org.apache.commons.dbcp2.BasicDataSource;
+import com.shop.config.Constants;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,6 +35,18 @@ public class MySQLProductDao implements ProductDao {
             product = createProductFromStatement(statement);
         }
         return Optional.of(product);
+    }
+
+    @Override
+    public List<Product> getLimited(int offset) throws SQLException {
+        List<Product> products;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS LIMIT ?, ?")) {
+            statement.setInt(2, Constants.PRODUCT_LIMIT);
+            statement.setInt(1, offset);
+            products = createProductsFromStatement(statement);
+        }
+        return products;
     }
 
     @Override
