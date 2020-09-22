@@ -66,6 +66,7 @@ public class MySQLUserDao implements UserDao {
     public void update(User element) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("UPDATE USERS SET EMAIL = ?, PASSWORD_HASH = ?, SALT = ?, ROLE = ? WHERE ID = ?")) {
+            statement.setLong(3, element.getId());
             insertOrUpdate(element, statement);
         }
     }
