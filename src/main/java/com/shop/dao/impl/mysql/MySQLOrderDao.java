@@ -35,13 +35,36 @@ public class MySQLOrderDao implements OrderDao {
     }
 
     @Override
-    public void addProduct(Order order, Product product, int count) throws SQLException {
-
-    }
-
-    @Override
-    public void removeProduct(Order order, Product product, int count) throws SQLException {
-
+    public void addCountOfProductProduct(Order order, Product product, int newCount) throws SQLException {
+        if (newCount == 0)
+            return;
+        Connection connection = dataSource.getConnection();
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement("SELECT * FROM ORDER_HAS_PRODUCT WHERE ORDER_ID = ? AND PRODUCT_ID = ?");
+            statement.setLong(1, order.getId());
+            statement.setLong(2, product.getId());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    statement = connection.prepareStatement("UPDATE ORDER_HAS_PRODUCT SET COUNT = ?");
+                    statement.setInt(1, newCount);
+                }
+                else {
+                    statement = connection.prepareStatement("INSERT INTO ORDER_HAS_PRODUCT VALUES (?, ?, ?, ?)");
+                    statement.setLong(1, order.getId());
+                    statement.setLong(2, product.getId());
+                    statement.setInt(3, newCount);
+                    statement.setDouble(4, product.getPrice());
+                }
+                statement.execute();
+            }
+        }
+        finally {
+            if (statement != null)
+                statement.close();
+            if (connection != null)
+                connection.close();
+        }
     }
 
     @Override

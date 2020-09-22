@@ -9,6 +9,5 @@ import java.util.List;
 
 public interface OrderDao extends PageDao<Order> {
     List<Order> getByUser(User user) throws SQLException;
-    void addProduct(Order order, Product product, int count) throws SQLException;
-    void removeProduct(Order order, Product product, int count) throws SQLException;
+    void addCountOfProductProduct(Order order, Product product, int newCount) throws SQLException;
 }
