@@ -75,7 +75,7 @@ public class MySQLCategoryDao implements CategoryDao {
         }
     }
 
-    private Category createCategoryFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
+    public static Category createCategoryFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         Category category = null;
         try (ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
@@ -86,7 +86,7 @@ public class MySQLCategoryDao implements CategoryDao {
         return category;
     }
 
-    private List<Category> createCategoriesFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
+    public static List<Category> createCategoriesFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         List<Category> categories = new ArrayList<>();
         try (ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
@@ -98,7 +98,7 @@ public class MySQLCategoryDao implements CategoryDao {
         return categories;
     }
 
-    private void setUpFields(Connection connection, Category category, ResultSet resultSet) throws SQLException {
+    public static void setUpFields(Connection connection, Category category, ResultSet resultSet) throws SQLException {
         category.setId(resultSet.getLong("id"));
         category.setName(resultSet.getString("name"));
         category.setParentCategory(getById(connection, resultSet.getLong("parent_id")).orElse(null));
@@ -106,13 +106,13 @@ public class MySQLCategoryDao implements CategoryDao {
         category.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
     }
 
-    private void insertOrUpdate(Category category, PreparedStatement statement) throws SQLException {
+    private static void insertOrUpdate(Category category, PreparedStatement statement) throws SQLException {
         statement.setString(1, category.getName());
         statement.setLong(2, category.getParentCategory().getId());
         statement.execute();
     }
 
-    private Optional<Category> getById(Connection connection, long id) throws SQLException {
+    public static Optional<Category> getById(Connection connection, long id) throws SQLException {
         Category category;
         try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM CATEGORIES WHERE ID = ?")) {
             statement.setLong(1, id);

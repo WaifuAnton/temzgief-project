@@ -4,12 +4,9 @@ import com.shop.config.Constants;
 import com.shop.connection.ConnectionPool;
 import com.shop.connection.ConnectionPoolFactory;
 import com.shop.dao.OrderDao;
-import com.shop.entity.Category;
 import com.shop.entity.Order;
 import com.shop.entity.Product;
 import com.shop.entity.User;
-import com.shop.enumeration.Color;
-import com.shop.enumeration.Role;
 import com.shop.enumeration.Status;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -132,7 +129,7 @@ public class MySQLOrderDao implements OrderDao {
         return orders;
     }
 
-    private Order createOrderFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
+    static Order createOrderFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         Order order = null;
         try (ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
@@ -143,7 +140,7 @@ public class MySQLOrderDao implements OrderDao {
         return order;
     }
 
-    private List<Order> createOrdersFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
+    static List<Order> createOrdersFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         List<Order> orders = new ArrayList<>();
         try (ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
@@ -155,21 +152,13 @@ public class MySQLOrderDao implements OrderDao {
         return orders;
     }
 
-    private void setUpFields(Connection connection, Order order, ResultSet resultSet) throws SQLException {
+    static void setUpFields(Connection connection, Order order, ResultSet resultSet) throws SQLException {
         order.setId(resultSet.getLong("id"));
         try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS WHERE ID = ?")) {
             statement.setLong(1, resultSet.getLong("user_id"));
-            try (ResultSet resultSet1 = statement.executeQuery()) {
-                User user = new User();
-                user.setId(resultSet1.getLong("id"));
-                user.setEmail(resultSet1.getString("email"));
-                user.setPasswordHash(resultSet1.getBytes("password_hash"));
-                user.setSalt(resultSet1.getString("salt"));
-                user.setRole(Role.valueOf(resultSet1.getString("role").toUpperCase()));
-                user.setCreateDate(new Date(resultSet1.getTimestamp("create_date").getTime()));
-                user.setLastUpdate(new Date(resultSet1.getTimestamp("last_update").getTime()));
-                order.setUser(user);
-            }
+            User user = new User();
+            MySQLUserDao.createUserFromStatement(statement);
+            order.setUser(user);
         }
         order.setTotal(resultSet.getDouble("total"));
         order.setProducts(getProductsInOrder(connection, order));
@@ -179,7 +168,7 @@ public class MySQLOrderDao implements OrderDao {
         order.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
     }
 
-    private List<Product> getProductsInOrder(Connection connection, Order order) throws SQLException {
+    private static List<Product> getProductsInOrder(Connection connection, Order order) throws SQLException {
         List<Product> products = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement("SELECT P.ID, P.NAME, P.PICTURE, P.COLOR, P.DESCRIPTION, P.PRICE, P.AMOUNT, P.CATEGORY_ID, P.CREATE_DATE, P.LAST_UPDATE FROM PRODUCTS P " +
                 "INNER JOIN ORDER_HAS_PRODUCT OP ON P.ID = OP.product_id " +
@@ -189,14 +178,8 @@ public class MySQLOrderDao implements OrderDao {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Product product = new Product();
-                    product.setId(resultSet.getLong("id"));
-                    product.setName(resultSet.getString("name"));
-                    product.setPicture(resultSet.getString("picture"));
-                    product.setColor(Color.valueOf(resultSet.getString("color").toUpperCase()));
-                    product.setDescription(resultSet.getString("description"));
-                    product.setPrice(resultSet.getDouble("price"));
-                    product.setAmount(resultSet.getInt("amount"));
-                    product.setCategory(getById(connection, resultSet.getLong("category_id")).orElseThrow(() -> new SQLException("Product cannot exist without its category")));
+                    MySQLProductDao.setUpFields(connection, product, resultSet);
+                    product.setCategory(MySQLCategoryDao.getById(connection, resultSet.getLong("category_id")).orElseThrow(() -> new SQLException("Product cannot exist without its category")));
                     product.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
                     product.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
                     products.add(product);
@@ -204,33 +187,5 @@ public class MySQLOrderDao implements OrderDao {
                 return products;
             }
         }
-    }
-
-    private Optional<Category> getById(Connection connection, long id) throws SQLException {
-        Category category;
-        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM CATEGORIES WHERE ID = ?")) {
-            statement.setLong(1, id);
-            category = createCategoryFromStatement(connection, statement);
-        }
-        return Optional.ofNullable(category);
-    }
-
-    private Category createCategoryFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
-        Category category = null;
-        try (ResultSet resultSet = statement.executeQuery()) {
-            if (resultSet.next()) {
-                category = new Category();
-                setUpFields(connection, category, resultSet);
-            }
-        }
-        return category;
-    }
-
-    private void setUpFields(Connection connection, Category category, ResultSet resultSet) throws SQLException {
-        category.setId(resultSet.getLong("id"));
-        category.setName(resultSet.getString("name"));
-        category.setParentCategory(getById(connection, resultSet.getLong("parent_id")).orElse(null));
-        category.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
-        category.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
     }
 }

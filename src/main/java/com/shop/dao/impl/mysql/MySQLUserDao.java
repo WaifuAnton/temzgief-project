@@ -1,6 +1,5 @@
 package com.shop.dao.impl.mysql;
 
-import com.shop.config.Constants;
 import com.shop.connection.ConnectionPool;
 import com.shop.connection.ConnectionPoolFactory;
 import com.shop.dao.UserDao;
@@ -80,7 +79,7 @@ public class MySQLUserDao implements UserDao {
         }
     }
 
-    private void insertOrUpdate(User element, PreparedStatement statement) throws SQLException {
+    private static void insertOrUpdate(User element, PreparedStatement statement) throws SQLException {
         statement.setString(1, element.getEmail());
         statement.setBytes(2, element.getPasswordHash());
         statement.setString(3, element.getSalt());
@@ -88,7 +87,7 @@ public class MySQLUserDao implements UserDao {
         statement.execute();
     }
 
-    private User createUserFromStatement(PreparedStatement statement) throws SQLException {
+    static User createUserFromStatement(PreparedStatement statement) throws SQLException {
         User user = null;
         try (ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
@@ -99,7 +98,7 @@ public class MySQLUserDao implements UserDao {
         return user;
     }
 
-    private List<User> createUsersFromStatement(PreparedStatement statement) throws SQLException {
+    static List<User> createUsersFromStatement(PreparedStatement statement) throws SQLException {
         List<User> users = new ArrayList<>();
         try (ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
@@ -111,7 +110,7 @@ public class MySQLUserDao implements UserDao {
         return users;
     }
 
-    private void setUpFields(User user, ResultSet resultSet) throws SQLException {
+    static void setUpFields(User user, ResultSet resultSet) throws SQLException {
         user.setId(resultSet.getLong("id"));
         user.setEmail(resultSet.getString("email"));
         user.setPasswordHash(resultSet.getBytes("password_hash"));
@@ -119,14 +118,5 @@ public class MySQLUserDao implements UserDao {
         user.setRole(Role.valueOf(resultSet.getString("role").toUpperCase()));
         user.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
         user.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
-    }
-
-    Optional<User> getById(Connection connection, int id) throws SQLException {
-        User user;
-        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS WHERE ID = ?")) {
-            statement.setLong(1, id);
-            user = createUserFromStatement(statement);
-        }
-        return Optional.of(user);
     }
 }

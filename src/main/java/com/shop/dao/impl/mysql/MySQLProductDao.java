@@ -2,10 +2,7 @@ package com.shop.dao.impl.mysql;
 
 import com.shop.connection.ConnectionPool;
 import com.shop.connection.ConnectionPoolFactory;
-import com.shop.dao.CategoryDao;
-import com.shop.dao.PageDao;
 import com.shop.dao.ProductDao;
-import com.shop.dao.factory.DaoFactory;
 import com.shop.entity.Product;
 import com.shop.enumeration.Color;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -24,16 +21,13 @@ public class MySQLProductDao implements ProductDao {
     private final ConnectionPool connectionPool = ConnectionPoolFactory.getConnectionPool();
     private final BasicDataSource dataSource = connectionPool.getDataSource();
 
-    private final DaoFactory factory = DaoFactory.getDaoFactory();
-    private final CategoryDao categoryDao = factory.getCategoryDao();
-
     @Override
     public Optional<Product> getByName(String name) throws SQLException {
         Product product;
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS WHERE NAME = ?")) {
             statement.setString(1, name);
-            product = createProductFromStatement(statement);
+            product = createProductFromStatement(connection, statement);
         }
         return Optional.of(product);
     }
@@ -45,7 +39,7 @@ public class MySQLProductDao implements ProductDao {
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS LIMIT ?, ?")) {
             statement.setInt(2, Constants.PRODUCT_LIMIT);
             statement.setInt(1, offset);
-            products = createProductsFromStatement(statement);
+            products = createProductsFromStatement(connection, statement);
         }
         return products;
     }
@@ -56,7 +50,7 @@ public class MySQLProductDao implements ProductDao {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS WHERE ID = ?")) {
             statement.setLong(1, id);
-            product = createProductFromStatement(statement);
+            product = createProductFromStatement(connection, statement);
         }
         return Optional.of(product);
     }
@@ -66,7 +60,7 @@ public class MySQLProductDao implements ProductDao {
         List<Product> products;
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS")) {
-            products = createProductsFromStatement(statement);
+            products = createProductsFromStatement(connection, statement);
         }
         return products;
     }
@@ -101,7 +95,7 @@ public class MySQLProductDao implements ProductDao {
         }
     }
 
-    private void insertOrUpdate(Product element, PreparedStatement statement) throws SQLException {
+    private static void insertOrUpdate(Product element, PreparedStatement statement) throws SQLException {
         statement.setString(1, element.getName());
         statement.setString(2, element.getPicture());
         statement.setString(3, element.getColor().toString());
@@ -112,30 +106,30 @@ public class MySQLProductDao implements ProductDao {
         statement.execute();
     }
 
-    private Product createProductFromStatement(PreparedStatement statement) throws SQLException {
+    static Product createProductFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         Product product = null;
         try (ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
                 product = new Product();
-                setUpFields(product, resultSet);
+                setUpFields(connection, product, resultSet);
             }
         }
         return product;
     }
 
-    private List<Product> createProductsFromStatement(PreparedStatement statement) throws SQLException {
+    static List<Product> createProductsFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         List<Product> products = new ArrayList<>();
         try (ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 Product product = new Product();
-                setUpFields(product, resultSet);
+                setUpFields(connection, product, resultSet);
                 products.add(product);
             }
         }
         return products;
     }
 
-    private void setUpFields(Product product, ResultSet resultSet) throws SQLException {
+    static void setUpFields(Connection connection, Product product, ResultSet resultSet) throws SQLException {
         product.setId(resultSet.getLong("id"));
         product.setName(resultSet.getString("name"));
         product.setPicture(resultSet.getString("picture"));
@@ -143,7 +137,7 @@ public class MySQLProductDao implements ProductDao {
         product.setDescription(resultSet.getString("description"));
         product.setPrice(resultSet.getDouble("price"));
         product.setAmount(resultSet.getInt("amount"));
-        product.setCategory(categoryDao.getById(resultSet.getLong("category_id")).orElseThrow(() -> new SQLException("Product cannot exist without its category")));
+        product.setCategory(MySQLCategoryDao.getById(connection, resultSet.getLong("category_id")).orElseThrow(() -> new SQLException("Product cannot exist without its category")));
         product.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
         product.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
     }
