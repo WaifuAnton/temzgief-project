@@ -35,7 +35,7 @@ public class MySQLFactory extends DaoFactory {
     }
 
     @Override
-    public Dao<Address> getAddressDao() {
+    public PageDao<Address> getAddressDao() {
         return null;
     }
 

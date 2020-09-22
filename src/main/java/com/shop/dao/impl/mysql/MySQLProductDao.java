@@ -3,6 +3,7 @@ package com.shop.dao.impl.mysql;
 import com.shop.connection.ConnectionPool;
 import com.shop.connection.ConnectionPoolFactory;
 import com.shop.dao.CategoryDao;
+import com.shop.dao.PageDao;
 import com.shop.dao.ProductDao;
 import com.shop.dao.factory.DaoFactory;
 import com.shop.entity.Product;
@@ -38,7 +39,7 @@ public class MySQLProductDao implements ProductDao {
     }
 
     @Override
-    public List<Product> getLimited(int offset) throws SQLException {
+    public List<Product> findLimited(int offset) throws SQLException {
         List<Product> products;
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS LIMIT ?, ?")) {

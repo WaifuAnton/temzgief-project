@@ -34,7 +34,7 @@ public class H2Factory extends DaoFactory {
     }
 
     @Override
-    public Dao<Address> getAddressDao() {
+    public PageDao<Address> getAddressDao() {
         return null;
     }
 
