@@ -1,6 +1,7 @@
 package com.shop.dao.factory;
 
 import com.shop.dao.*;
+import com.shop.dao.impl.mysql.MySQLAddressDao;
 import com.shop.dao.impl.mysql.MySQLCategoryDao;
 import com.shop.dao.impl.mysql.MySQLProductDao;
 import com.shop.dao.impl.mysql.MySQLUserDao;
@@ -36,7 +37,7 @@ public class MySQLFactory extends DaoFactory {
 
     @Override
     public PageDao<Address> getAddressDao() {
-        return null;
+        return new MySQLAddressDao();
     }
 
     @Override
