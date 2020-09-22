@@ -1,9 +1,9 @@
 package com.shop.dao.factory;
 
 import com.shop.config.Constants;
-import com.shop.dao.CategoryDao;
-import com.shop.dao.ProductDao;
-import com.shop.dao.UserDao;
+import com.shop.dao.*;
+import com.shop.entity.Address;
+import com.shop.entity.Delivery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,11 +36,16 @@ public abstract class DaoFactory {
             case Constants.H2:
                 return H2Factory.getInstance();
             default:
-                return getDaoFactory();
+                logger.fatal("Database {} is not supported", Constants.DATABASE_TYPE);
+                System.exit(-1);
+                return null;
         }
     }
 
     public abstract UserDao getUserDao();
     public abstract ProductDao getProductDao();
     public abstract CategoryDao getCategoryDao();
+    public abstract Dao<Address> getAddressDao();
+    public abstract Dao<Delivery> getDeliveryDao();
+    public abstract OrderDao getOrderDao();
 }

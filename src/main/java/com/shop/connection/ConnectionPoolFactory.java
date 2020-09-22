@@ -8,7 +8,7 @@ public abstract class ConnectionPoolFactory {
     private static final Logger logger = LogManager.getLogger(ConnectionPoolFactory.class);
 
     public static ConnectionPool getConnectionPool() {
-        switch (Constants.DATABASE_TYPE) {
+        switch (Constants.DATABASE_TYPE.toLowerCase()) {
             case Constants.MYSQL:
                 return MySQLConnectionPool.getInstance();
             case Constants.H2:
@@ -21,13 +21,15 @@ public abstract class ConnectionPoolFactory {
     }
 
     public static ConnectionPool getConnectionPool(String databaseType) {
-        switch (databaseType) {
+        switch (databaseType.toLowerCase()) {
             case Constants.MYSQL:
                 return MySQLConnectionPool.getInstance();
             case Constants.H2:
                 return H2ConnectionPool.getInstance();
             default:
-                return getConnectionPool();
+                logger.fatal("Database {} is not supported", Constants.DATABASE_TYPE);
+                System.exit(-1);
+                return null;
         }
     }
 }

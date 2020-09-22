@@ -1,9 +1,9 @@
 package com.shop.dao.factory;
 
-import com.shop.dao.CategoryDao;
-import com.shop.dao.ProductDao;
-import com.shop.dao.UserDao;
+import com.shop.dao.*;
 import com.shop.dao.impl.h2.H2UserDao;
+import com.shop.entity.Address;
+import com.shop.entity.Delivery;
 
 public class H2Factory extends DaoFactory {
     private static H2Factory instance;
@@ -30,6 +30,21 @@ public class H2Factory extends DaoFactory {
 
     @Override
     public CategoryDao getCategoryDao() {
+        return null;
+    }
+
+    @Override
+    public Dao<Address> getAddressDao() {
+        return null;
+    }
+
+    @Override
+    public Dao<Delivery> getDeliveryDao() {
+        return null;
+    }
+
+    @Override
+    public OrderDao getOrderDao() {
         return null;
     }
 }
