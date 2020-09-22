@@ -36,7 +36,7 @@ public class RegisterService implements Service {
         }
         catch (SQLIntegrityConstraintViolationException e) {
             request.setAttribute("notAdded", "User already exists");
-            return "controller?action=main";
+            return "register.jsp";
         }
         catch (SQLException throwables) {
             logger.error("Unpredictable SQL exception has occurred", throwables);

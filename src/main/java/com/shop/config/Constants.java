@@ -15,9 +15,7 @@ public final class Constants {
     public static final String RANDOM_ALGORITHM = "SHA1PRNG";
     public static final int SALT_SIZE = 16;
     public static final String DIGEST_ALGORITHM = "SHA-256";
-
-    public static final String REGISTER = "register";
-    public static final String LOGIN = "login";
+    public static final String SALT_ENCODING = "cp1251";
 
     private Constants() {
         //can`t create instance
