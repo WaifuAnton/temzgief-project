@@ -58,4 +58,16 @@ public class Order {
     public Date getLastUpdate() {
         return lastUpdate;
     }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
 }

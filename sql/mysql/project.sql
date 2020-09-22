@@ -226,6 +226,21 @@ END$$
 
 
 USE `shopdb`$$
+DROP TRIGGER IF EXISTS `shopdb`.`order_has_product_BEFORE_UPDATE` $$
+USE `shopdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `shopdb`.`order_has_product_BEFORE_UPDATE` BEFORE UPDATE ON `order_has_product` FOR EACH ROW
+BEGIN
+	DECLARE delta INT;
+    SET delta = NEW.count - count;
+    IF (delta < 0) THEN
+		UPDATE products SET amount = (SELECT amount FROM products WHERE id = product_id) + delta;
+    ELSE
+		UPDATE products SET amount = (SELECT amount FROM products WHERE id = product_id) - delta;
+    END IF;
+END$$
+
+
+USE `shopdb`$$
 DROP TRIGGER IF EXISTS `shopdb`.`blocked_users_BEFORE_INSERT` $$
 USE `shopdb`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `shopdb`.`blocked_users_BEFORE_INSERT` BEFORE INSERT ON `blocked_users` FOR EACH ROW

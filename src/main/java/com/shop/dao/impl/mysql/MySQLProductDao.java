@@ -143,7 +143,7 @@ public class MySQLProductDao implements ProductDao {
         product.setDescription(resultSet.getString("description"));
         product.setPrice(resultSet.getDouble("price"));
         product.setAmount(resultSet.getInt("amount"));
-        product.setCategory(categoryDao.getById(resultSet.getLong("category_id")).orElseThrow(() -> new SQLException("Product can`t exist without its category")));
+        product.setCategory(categoryDao.getById(resultSet.getLong("category_id")).orElseThrow(() -> new SQLException("Product cannot exist without its category")));
         product.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
         product.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
     }
