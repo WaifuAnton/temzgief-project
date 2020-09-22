@@ -120,4 +120,13 @@ public class MySQLUserDao implements UserDao {
         user.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
         user.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
     }
+
+    Optional<User> getById(Connection connection, int id) throws SQLException {
+        User user;
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS WHERE ID = ?")) {
+            statement.setLong(1, id);
+            user = createUserFromStatement(statement);
+        }
+        return Optional.of(user);
+    }
 }

@@ -30,7 +30,7 @@ public class MySQLCategoryDao implements CategoryDao {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM CATEGORIES WHERE ID = ?")) {
             statement.setLong(1, id);
-            category = createCategoryFromStatement(statement);
+            category = createCategoryFromStatement(connection, statement);
         }
         return Optional.ofNullable(category);
     }
@@ -40,7 +40,7 @@ public class MySQLCategoryDao implements CategoryDao {
         List<Category> categories;
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM CATEGORIES")) {
-            categories = createCategoriesFromStatement(statement);
+            categories = createCategoriesFromStatement(connection, statement);
         }
         return categories;
     }
@@ -75,33 +75,33 @@ public class MySQLCategoryDao implements CategoryDao {
         }
     }
 
-    private Category createCategoryFromStatement(PreparedStatement statement) throws SQLException {
+    private Category createCategoryFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         Category category = null;
         try (ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
                 category = new Category();
-                setUpFields(category, resultSet);
+                setUpFields(connection, category, resultSet);
             }
         }
         return category;
     }
 
-    private List<Category> createCategoriesFromStatement(PreparedStatement statement) throws SQLException {
+    private List<Category> createCategoriesFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         List<Category> categories = new ArrayList<>();
         try (ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 Category category = new Category();
-                setUpFields(category, resultSet);
+                setUpFields(connection, category, resultSet);
                 categories.add(category);
             }
         }
         return categories;
     }
 
-    private void setUpFields(Category category, ResultSet resultSet) throws SQLException {
+    private void setUpFields(Connection connection, Category category, ResultSet resultSet) throws SQLException {
         category.setId(resultSet.getLong("id"));
         category.setName(resultSet.getString("name"));
-        category.setParentCategory(getById(resultSet.getLong("parent_id")).orElse(null));
+        category.setParentCategory(getById(connection, resultSet.getLong("parent_id")).orElse(null));
         category.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
         category.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
     }
@@ -110,5 +110,14 @@ public class MySQLCategoryDao implements CategoryDao {
         statement.setString(1, category.getName());
         statement.setLong(2, category.getParentCategory().getId());
         statement.execute();
+    }
+
+    private Optional<Category> getById(Connection connection, long id) throws SQLException {
+        Category category;
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM CATEGORIES WHERE ID = ?")) {
+            statement.setLong(1, id);
+            category = createCategoryFromStatement(connection, statement);
+        }
+        return Optional.ofNullable(category);
     }
 }

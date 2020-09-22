@@ -3,14 +3,13 @@ package com.shop.dao.impl.mysql;
 import com.shop.config.Constants;
 import com.shop.connection.ConnectionPool;
 import com.shop.connection.ConnectionPoolFactory;
-import com.shop.dao.CategoryDao;
 import com.shop.dao.OrderDao;
-import com.shop.dao.UserDao;
-import com.shop.dao.factory.DaoFactory;
+import com.shop.entity.Category;
 import com.shop.entity.Order;
 import com.shop.entity.Product;
 import com.shop.entity.User;
 import com.shop.enumeration.Color;
+import com.shop.enumeration.Role;
 import com.shop.enumeration.Status;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -24,17 +23,13 @@ public class MySQLOrderDao implements OrderDao {
     private final ConnectionPool connectionPool = ConnectionPoolFactory.getConnectionPool();
     private final BasicDataSource dataSource = connectionPool.getDataSource();
 
-    private final DaoFactory daoFactory = DaoFactory.getDaoFactory();
-    private final UserDao userDao = daoFactory.getUserDao();
-    private final CategoryDao categoryDao = daoFactory.getCategoryDao();
-
     @Override
     public List<Order> getByUser(User user) throws SQLException {
         List<Order> orders;
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM ORDERS WHERE USER_ID = ?")) {
             statement.setLong(1, user.getId());
-            orders = createOrdersFromStatement(statement);
+            orders = createOrdersFromStatement(connection, statement);
         }
         return orders;
     }
@@ -55,7 +50,7 @@ public class MySQLOrderDao implements OrderDao {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM ORDERS WHERE ID = ?")) {
             statement.setLong(1, id);
-            order = createOrderFromStatement(statement);
+            order = createOrderFromStatement(connection, statement);
         }
         return Optional.of(order);
     }
@@ -65,7 +60,7 @@ public class MySQLOrderDao implements OrderDao {
         List<Order> orders;
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM ORDERS")) {
-            orders = createOrdersFromStatement(statement);
+            orders = createOrdersFromStatement(connection, statement);
         }
         return orders;
     }
@@ -109,55 +104,61 @@ public class MySQLOrderDao implements OrderDao {
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM ORDERS LIMIT ?, ?")) {
             statement.setInt(2, Constants.PRODUCT_LIMIT);
             statement.setInt(1, offset);
-            orders = createOrdersFromStatement(statement);
+            orders = createOrdersFromStatement(connection, statement);
         }
         return orders;
     }
 
-    private void insertOrUpdate(Order element, PreparedStatement statement) throws SQLException {
-        statement.setLong(1, element.getUser().getId());
-        statement.setDouble(2, element.getTotal());
-        statement.setString(3, element.getStatus().toString());
-        statement.execute();
-    }
-
-    private Order createOrderFromStatement(PreparedStatement statement) throws SQLException {
+    private Order createOrderFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         Order order = null;
         try (ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
                 order = new Order();
-                setUpFields(order, resultSet);
+                setUpFields(connection, order, resultSet);
             }
         }
         return order;
     }
 
-    private List<Order> createOrdersFromStatement(PreparedStatement statement) throws SQLException {
+    private List<Order> createOrdersFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         List<Order> orders = new ArrayList<>();
         try (ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 Order order = new Order();
-                setUpFields(order, resultSet);
+                setUpFields(connection, order, resultSet);
                 orders.add(order);
             }
         }
         return orders;
     }
 
-    private void setUpFields(Order order, ResultSet resultSet) throws SQLException {
+    private void setUpFields(Connection connection, Order order, ResultSet resultSet) throws SQLException {
         order.setId(resultSet.getLong("id"));
-        order.setUser(userDao.getById(resultSet.getLong("user_id")).orElseThrow(() -> new SQLException("Order cannot exist without user!")));
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS WHERE ID = ?")) {
+            statement.setLong(1, resultSet.getLong("user_id"));
+            try (ResultSet resultSet1 = statement.executeQuery()) {
+                User user = new User();
+                user.setId(resultSet1.getLong("id"));
+                user.setEmail(resultSet1.getString("email"));
+                user.setPasswordHash(resultSet1.getBytes("password_hash"));
+                user.setSalt(resultSet1.getString("salt"));
+                user.setRole(Role.valueOf(resultSet1.getString("role").toUpperCase()));
+                user.setCreateDate(new Date(resultSet1.getTimestamp("create_date").getTime()));
+                user.setLastUpdate(new Date(resultSet1.getTimestamp("last_update").getTime()));
+                order.setUser(user);
+            }
+        }
         order.setTotal(resultSet.getDouble("total"));
-        order.setProducts(findProductsByOrder(order));
+        order.setProducts(getProductsInOrder(connection, order));
         order.setTotal(resultSet.getDouble("total"));
         order.setStatus(Status.valueOf(resultSet.getString("status").toUpperCase()));
         order.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
         order.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
     }
 
-    private List<Product> findProductsByOrder(Order order) throws SQLException {
+    private List<Product> getProductsInOrder(Connection connection, Order order) throws SQLException {
         List<Product> products = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT P.ID, P.NAME, P.PICTURE, P.COLOR, P.DESCRIPTION, P.PRICE, P.AMOUNT, P.CATEGORY_ID, P.CREATE_DATE, P.LAST_UPDATE FROM PRODUCTS P " +
+        try (PreparedStatement statement = connection.prepareStatement("SELECT P.ID, P.NAME, P.PICTURE, P.COLOR, P.DESCRIPTION, P.PRICE, P.AMOUNT, P.CATEGORY_ID, P.CREATE_DATE, P.LAST_UPDATE FROM PRODUCTS P " +
                 "INNER JOIN ORDER_HAS_PRODUCT OP ON P.ID = OP.product_id " +
                 "INNER JOIN ORDERS O ON O.ID = OP.order_id " +
                 "WHERE O.ID = ?")) {
@@ -172,7 +173,7 @@ public class MySQLOrderDao implements OrderDao {
                     product.setDescription(resultSet.getString("description"));
                     product.setPrice(resultSet.getDouble("price"));
                     product.setAmount(resultSet.getInt("amount"));
-                    product.setCategory(categoryDao.getById(resultSet.getLong("category_id")).orElseThrow(() -> new SQLException("Product cannot exist without its category")));
+                    product.setCategory(getById(connection, resultSet.getLong("category_id")).orElseThrow(() -> new SQLException("Product cannot exist without its category")));
                     product.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
                     product.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
                     products.add(product);
@@ -180,5 +181,33 @@ public class MySQLOrderDao implements OrderDao {
                 return products;
             }
         }
+    }
+
+    private Optional<Category> getById(Connection connection, long id) throws SQLException {
+        Category category;
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM CATEGORIES WHERE ID = ?")) {
+            statement.setLong(1, id);
+            category = createCategoryFromStatement(connection, statement);
+        }
+        return Optional.ofNullable(category);
+    }
+
+    private Category createCategoryFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
+        Category category = null;
+        try (ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                category = new Category();
+                setUpFields(connection, category, resultSet);
+            }
+        }
+        return category;
+    }
+
+    private void setUpFields(Connection connection, Category category, ResultSet resultSet) throws SQLException {
+        category.setId(resultSet.getLong("id"));
+        category.setName(resultSet.getString("name"));
+        category.setParentCategory(getById(connection, resultSet.getLong("parent_id")).orElse(null));
+        category.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
+        category.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
     }
 }
