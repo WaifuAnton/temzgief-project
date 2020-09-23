@@ -42,9 +42,10 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `shopdb`.`categories` ;
 
 CREATE TABLE IF NOT EXISTS `shopdb`.`categories` (
-  `id` BIGINT(10) UNSIGNED NOT NULL,
+  `id` BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(256) NOT NULL,
-  `parent_id` BIGINT(10) UNSIGNED NOT NULL,
+  `picture` VARCHAR(128) NOT NULL,
+  `parent_id` BIGINT(10) UNSIGNED NULL,
   `create_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -66,7 +67,7 @@ DROP TABLE IF EXISTS `shopdb`.`products` ;
 CREATE TABLE IF NOT EXISTS `shopdb`.`products` (
   `id` BIGINT(10) UNSIGNED NOT NULL,
   `name` VARCHAR(256) NOT NULL,
-  `picture` VARCHAR(64) NOT NULL,
+  `picture` VARCHAR(128) NOT NULL,
   `color` VARCHAR(16) NOT NULL,
   `description` VARCHAR(4096) NULL,
   `price` DOUBLE UNSIGNED NOT NULL,
@@ -254,3 +255,14 @@ DELIMITER ;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- Data for table `shopdb`.`categories`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `shopdb`;
+INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'cars', 'pictures/cars/main.jpg', NULL, DEFAULT, DEFAULT);
+INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'clothes', 'pictures/clothes/main.png', NULL, DEFAULT, DEFAULT);
+
+COMMIT;
+

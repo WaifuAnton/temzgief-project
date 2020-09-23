@@ -7,15 +7,18 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="jstl" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setBundle basename="messages"/>
+<fmt:message key="login.name" var="register" scope="application"/>
 <html>
 <head>
-    <title>Title</title>
+    <title><fmt:message key="login.name"/></title>
 </head>
 <body>
 <form method="post" action="controller?action=login">
     <label><input type="email" name="email" size="10"/></label><br>
     <label><input type="password" name="password" size="10" /></label><br>
-    <input type="submit" value="Login" />
+    <input type="submit" value="${register}" />
 </form>
 <jstl:if test="${not empty requestScope.wrongEmailOrPassword}">
     <p>Wrong email or password</p>

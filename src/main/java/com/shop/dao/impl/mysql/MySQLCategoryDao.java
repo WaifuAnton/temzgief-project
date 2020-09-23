@@ -20,8 +20,14 @@ public class MySQLCategoryDao implements CategoryDao {
     private final BasicDataSource dataSource = connectionPool.getDataSource();
 
     @Override
-    public Optional<Category> getByName(String name) {
-        return Optional.empty();
+    public Optional<Category> getByName(String name) throws SQLException {
+        Category category;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM CATEGORIES WHERE NAME = ?")) {
+            statement.setString(1, name);
+            category = createCategoryFromStatement(connection, statement);
+        }
+        return Optional.ofNullable(category);
     }
 
     @Override
@@ -48,7 +54,7 @@ public class MySQLCategoryDao implements CategoryDao {
     @Override
     public void insert(Category element) throws SQLException {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("INSERT INTO CATEGORIES (NAME, PARENT_ID) VALUES (?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO CATEGORIES (NAME, PICTURE, PARENT_ID) VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
             insertOrUpdate(element, statement);
             try (ResultSet resultSet = statement.getGeneratedKeys()) {
                 if (resultSet.next())
@@ -101,6 +107,7 @@ public class MySQLCategoryDao implements CategoryDao {
     public static void setUpFields(Connection connection, Category category, ResultSet resultSet) throws SQLException {
         category.setId(resultSet.getLong("id"));
         category.setName(resultSet.getString("name"));
+        category.setPicture(resultSet.getString("picture"));
         category.setParentCategory(getById(connection, resultSet.getLong("parent_id")).orElse(null));
         category.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
         category.setLastUpdate(new Date(resultSet.getTimestamp("last_update").getTime()));
@@ -108,7 +115,8 @@ public class MySQLCategoryDao implements CategoryDao {
 
     private static void insertOrUpdate(Category category, PreparedStatement statement) throws SQLException {
         statement.setString(1, category.getName());
-        statement.setLong(2, category.getParentCategory().getId());
+        statement.setString(2, category.getPicture());
+        statement.setLong(3, category.getParentCategory().getId());
         statement.execute();
     }
 

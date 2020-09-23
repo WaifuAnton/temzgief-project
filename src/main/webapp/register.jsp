@@ -8,10 +8,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setBundle basename="messages"/>
-<fmt:message key="register.name" var="register"/>
+<fmt:message key="register.name" var="register" scope="application"/>
 <html>
 <head>
-    <title>Register</title>
+    <title><fmt:message key="register.name"/></title>
 </head>
 <body>
 <form method="post" action="controller?action=register">
