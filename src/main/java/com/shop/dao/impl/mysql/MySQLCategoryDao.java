@@ -41,11 +41,18 @@ public class MySQLCategoryDao implements CategoryDao {
     }
 
     @Override
-    public List<Category> findAllSub(Category category) throws SQLException {
+    public List<Category> findAllSub(String parentName) throws SQLException {
         List<Category> categories;
         try (Connection connection = dataSource.getConnection();
+             PreparedStatement nameStatement = connection.prepareStatement("SELECT ID FROM CATEGORIES WHERE NAME = ?");
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM CATEGORIES WHERE PARENT_ID = ?")) {
-            statement.setLong(1, category.getId());
+            nameStatement.setString(1, parentName);
+            long id = 0;
+            try (ResultSet resultSet = nameStatement.executeQuery()) {
+                if (resultSet.next())
+                    id = resultSet.getLong(1);
+            }
+            statement.setLong(1, id);
             categories = createCategoriesFromStatement(connection, statement);
         }
         return categories;

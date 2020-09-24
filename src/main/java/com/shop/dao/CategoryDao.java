@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface CategoryDao extends Dao<Category> {
     Optional<Category> getByName(String name) throws SQLException;
     List<Category> findAllRoot() throws SQLException;
-    List<Category> findAllSub(Category category) throws SQLException;
+    List<Category> findAllSub(String parentName) throws SQLException;
 }

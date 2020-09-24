@@ -217,16 +217,6 @@ END$$
 
 
 USE `shopdb`$$
-DROP TRIGGER IF EXISTS `shopdb`.`order_has_product_AFTER_DELETE` $$
-USE `shopdb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `shopdb`.`order_has_product_AFTER_DELETE` AFTER DELETE ON `order_has_product` FOR EACH ROW
-BEGIN
-	UPDATE products SET amount = amount + OLD.count WHERE id = OLD.product_id;
-    UPDATE orders SET total = total - OLD.price * OLD.count WHERE id = OLD.order_id;
-END$$
-
-
-USE `shopdb`$$
 DROP TRIGGER IF EXISTS `shopdb`.`order_has_product_BEFORE_UPDATE` $$
 USE `shopdb`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `shopdb`.`order_has_product_BEFORE_UPDATE` BEFORE UPDATE ON `order_has_product` FOR EACH ROW
@@ -238,6 +228,16 @@ BEGIN
     ELSE
 		UPDATE products SET amount = (SELECT amount FROM products WHERE id = product_id) - delta;
     END IF;
+END$$
+
+
+USE `shopdb`$$
+DROP TRIGGER IF EXISTS `shopdb`.`order_has_product_AFTER_DELETE` $$
+USE `shopdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `shopdb`.`order_has_product_AFTER_DELETE` AFTER DELETE ON `order_has_product` FOR EACH ROW
+BEGIN
+	UPDATE products SET amount = amount + OLD.count WHERE id = OLD.product_id;
+    UPDATE orders SET total = total - OLD.price * OLD.count WHERE id = OLD.order_id;
 END$$
 
 
@@ -263,6 +263,8 @@ START TRANSACTION;
 USE `shopdb`;
 INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'cars', 'pictures/cars/main.jpg', NULL, DEFAULT, DEFAULT);
 INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'clothes', 'pictures/clothes/main.png', NULL, DEFAULT, DEFAULT);
+INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'men', 'pictures/clothes/men.jpg', 2, DEFAULT, DEFAULT);
+INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'women', 'pictures/clothes/women.jpg', 2, DEFAULT, DEFAULT);
 
 COMMIT;
 
