@@ -102,7 +102,7 @@ public class MySQLCategoryDao implements CategoryDao {
         }
     }
 
-    public static Category createCategoryFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
+    static Category createCategoryFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         Category category = null;
         try (ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
@@ -113,7 +113,7 @@ public class MySQLCategoryDao implements CategoryDao {
         return category;
     }
 
-    public static List<Category> createCategoriesFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
+    static List<Category> createCategoriesFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         List<Category> categories = new ArrayList<>();
         try (ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
@@ -125,7 +125,7 @@ public class MySQLCategoryDao implements CategoryDao {
         return categories;
     }
 
-    public static void setUpFields(Connection connection, Category category, ResultSet resultSet) throws SQLException {
+    static void setUpFields(Connection connection, Category category, ResultSet resultSet) throws SQLException {
         category.setId(resultSet.getLong("id"));
         category.setName(resultSet.getString("name"));
         category.setPicture(resultSet.getString("picture"));

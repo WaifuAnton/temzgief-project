@@ -21,11 +21,12 @@
 <body>
 <table>
     <%for (Category category : categories) {%>
+    <%String name = category.getName().toLowerCase();%>
     <tr>
-        <td><img src='<%=category.getPicture()%>' height="200" alt='<%=category.getName() + " picture"%>'></td>
+        <td><img src='<%=category.getPicture()%>' height="200" alt='<%=name + " picture"%>'></td>
     </tr>
     <tr>
-        <td><a href='<%=category.getName() + ".jsp"%>'><fmt:message key='<%="category." + category.getName()%>'/></a></td>
+        <td><a href='<%=name + ".jsp"%>'><fmt:message key='<%="category." + name%>'/></a></td>
     </tr>
     <%}%>
 </table>

@@ -79,7 +79,7 @@ public class MySQLAddressDao implements PageDao<Address> {
         statement.execute();
     }
 
-    public static Address createAddressFromStatement(PreparedStatement statement) throws SQLException {
+    static Address createAddressFromStatement(PreparedStatement statement) throws SQLException {
         Address address = null;
         try (ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
@@ -90,7 +90,7 @@ public class MySQLAddressDao implements PageDao<Address> {
         return address;
     }
 
-    public static List<Address> createAddressesFromStatement(PreparedStatement statement) throws SQLException {
+    static List<Address> createAddressesFromStatement(PreparedStatement statement) throws SQLException {
         List<Address> addresses = new ArrayList<>();
         try (ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
@@ -102,7 +102,7 @@ public class MySQLAddressDao implements PageDao<Address> {
         return addresses;
     }
 
-    public static void setUpFields(Address address, ResultSet resultSet) throws SQLException {
+    static void setUpFields(Address address, ResultSet resultSet) throws SQLException {
         address.setId(resultSet.getLong("id"));
         address.setCountry(resultSet.getString("country"));
         address.setBuilding(resultSet.getString("building"));
