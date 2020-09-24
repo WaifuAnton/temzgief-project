@@ -265,6 +265,8 @@ INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create
 INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'clothes', 'pictures/clothes/main.png', NULL, DEFAULT, DEFAULT);
 INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'men', 'pictures/clothes/men.jpg', 2, DEFAULT, DEFAULT);
 INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'women', 'pictures/clothes/women.jpg', 2, DEFAULT, DEFAULT);
+INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'big', 'pictures/cars/big.png', 1, DEFAULT, DEFAULT);
+INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'small', 'pictures/cars/small.png', 1, DEFAULT, DEFAULT);
 
 COMMIT;
 

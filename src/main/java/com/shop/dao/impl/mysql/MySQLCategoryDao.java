@@ -46,7 +46,7 @@ public class MySQLCategoryDao implements CategoryDao {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement nameStatement = connection.prepareStatement("SELECT ID FROM CATEGORIES WHERE NAME = ?");
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM CATEGORIES WHERE PARENT_ID = ?")) {
-            nameStatement.setString(1, parentName);
+            nameStatement.setString(1, parentName.toLowerCase());
             long id = 0;
             try (ResultSet resultSet = nameStatement.executeQuery()) {
                 if (resultSet.next())
