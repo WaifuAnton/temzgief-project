@@ -25,7 +25,7 @@
         <td><img src='<%=category.getPicture()%>' height="200" alt='<%=category.getName() + " picture"%>'></td>
     </tr>
     <tr>
-        <td><a href='<%=category.getName() + ".jsp"%>'><fmt:message key='<%="category." + categoryDao.getByName(category.getName()).get().getName()%>'/></a></td>
+        <td><a href='<%=category.getName() + ".jsp"%>'><fmt:message key='<%="category." + category.getName()%>'/></a></td>
     </tr>
     <%}%>
 </table>
