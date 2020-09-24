@@ -31,6 +31,27 @@ public class MySQLCategoryDao implements CategoryDao {
     }
 
     @Override
+    public List<Category> findAllRoot() throws SQLException {
+        List<Category> categories;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM CATEGORIES WHERE PARENT_ID IS NULL")) {
+            categories = createCategoriesFromStatement(connection, statement);
+        }
+        return categories;
+    }
+
+    @Override
+    public List<Category> findAllSub(Category category) throws SQLException {
+        List<Category> categories;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM CATEGORIES WHERE PARENT_ID = ?")) {
+            statement.setLong(1, category.getId());
+            categories = createCategoriesFromStatement(connection, statement);
+        }
+        return categories;
+    }
+
+    @Override
     public Optional<Category> getById(long id) throws SQLException {
         Category category;
         try (Connection connection = dataSource.getConnection();

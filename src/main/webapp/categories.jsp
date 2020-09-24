@@ -13,7 +13,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setBundle basename="messages"/>
 <%CategoryDao categoryDao = DaoFactory.getDaoFactory().getCategoryDao();%>
-<%List<Category> categories = categoryDao.findAll();%>
+<%List<Category> categories = categoryDao.findAllRoot();%>
 <html>
 <head>
     <title><fmt:message key="categories.name"/></title>
