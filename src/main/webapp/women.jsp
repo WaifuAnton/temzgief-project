@@ -24,7 +24,7 @@
             <td>${item.manufactureDate}</td>
             <td>${item.price}</td>
             <td>
-                <form method="get" action="controller?buy">
+                <form method="get" action="controller?action=buy">
                     <input type="hidden" name = "deviceId" value="${item.id}"/>
                     <input type="submit" name="buy" value="${buy}">
                 </form>

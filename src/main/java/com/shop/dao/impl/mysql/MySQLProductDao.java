@@ -12,10 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class MySQLProductDao implements ProductDao {
     private final ConnectionPool connectionPool = ConnectionPoolFactory.getConnectionPool();
@@ -48,6 +45,38 @@ public class MySQLProductDao implements ProductDao {
             statement.setInt(3, Constants.PRODUCT_LIMIT);
             statement.setInt(2, offset);
             products = createProductsFromStatement(connection, statement);
+        }
+        return products;
+    }
+
+    @Override
+    public List<Product> findLimitedByCategoryNameSortBy(String categoryName, String field, boolean desc, int offset) throws SQLException {
+        List<Product> products;
+        List<String> allowedFields = Arrays.asList("price", "date", "name", "manufacture_date");
+        PreparedStatement statement = null;
+        if (!allowedFields.contains(field))
+            throw new IllegalArgumentException("Field must be one of " + allowedFields);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement categoryStatement = connection.prepareStatement("SELECT ID FROM CATEGORIES WHERE NAME = ?")) {
+            categoryStatement.setString(1, categoryName);
+            StringBuilder sql = new StringBuilder("SELECT * FROM PRODUCTS WHERE CATEGORY_ID = ? ORDER BY " + field + ' ');
+            if (desc)
+                sql.append("DESC ");
+            sql.append("LIMIT ?, ?");
+            statement = connection.prepareStatement(sql.toString());
+            long id = 0;
+            try (ResultSet resultSet = categoryStatement.executeQuery()) {
+                if (resultSet.next())
+                    id = resultSet.getLong(1);
+            }
+            statement.setLong(1, id);
+            statement.setInt(3, Constants.PRODUCT_LIMIT);
+            statement.setInt(2, offset);
+            products = createProductsFromStatement(connection, statement);
+        }
+        finally {
+            if (statement != null)
+                statement.close();
         }
         return products;
     }

@@ -20,6 +20,8 @@ public class ProductsWomenService implements Service {
     public String execute(HttpServletRequest request) {
         int page;
         String pageParam = request.getParameter("page");
+        String sort = request.getParameter("sort");
+        String desc = request.getParameter("desc");
         if (pageParam == null)
             page = 1;
         else
@@ -28,7 +30,13 @@ public class ProductsWomenService implements Service {
         try {
             pagesCount = (long) Math.ceil((double) productDao.count() / Constants.PRODUCT_LIMIT);
             request.setAttribute("pagesCount", pagesCount);
-            List<Product> products = productDao.findLimitedByCategoryName("women", (page - 1) * Constants.PRODUCT_LIMIT);
+            List<Product> products;
+            if (sort == null)
+                products = productDao.findLimitedByCategoryNameSortBy("women", "name", false, (page - 1) * Constants.PRODUCT_LIMIT);
+            else if (desc == null)
+                products = productDao.findLimitedByCategoryNameSortBy("women", sort, false, (page - 1) * Constants.PRODUCT_LIMIT);
+            else
+                products = productDao.findLimitedByCategoryNameSortBy("women", sort, Boolean.parseBoolean(desc), (page - 1) * Constants.PRODUCT_LIMIT);
             request.setAttribute("productsWomen", products);
             return "women.jsp";
         }

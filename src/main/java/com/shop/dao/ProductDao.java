@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface ProductDao extends PageDao<Product> {
     Optional<Product> getByName(String name) throws SQLException;
     List<Product> findLimitedByCategoryName(String categoryName, int offset) throws SQLException;
+    List<Product> findLimitedByCategoryNameSortBy(String categoryName, String field, boolean desc, int offset) throws SQLException;
 }
