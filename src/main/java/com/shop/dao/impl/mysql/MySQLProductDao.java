@@ -40,7 +40,7 @@ public class MySQLProductDao implements ProductDao {
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS WHERE CATEGORY_ID = ? LIMIT ?, ?")) {
             categoryStatement.setString(1, categoryName);
             long id = 0;
-            try (ResultSet resultSet = statement.executeQuery()) {
+            try (ResultSet resultSet = categoryStatement.executeQuery()) {
                 if (resultSet.next())
                     id = resultSet.getLong(1);
             }

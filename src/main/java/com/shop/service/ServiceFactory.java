@@ -25,6 +25,7 @@ public class ServiceFactory {
         services = new HashMap<>();
         services.put("login", new LoginService());
         services.put("register", new RegisterService());
+        services.put("women", new ProductsWomenService());
     }
 
     public Service getService(HttpServletRequest request) {

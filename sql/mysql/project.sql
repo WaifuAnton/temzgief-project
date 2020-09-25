@@ -279,7 +279,7 @@ START TRANSACTION;
 USE `shopdb`;
 INSERT INTO `shopdb`.`products` (`id`, `name`, `picture`, `color`, `manufacture_date`, `description`, `price`, `amount`, `category_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'Mango 77072888-08', 'pictures/clothes/Mango77072888-08.jpg', 'WHITE', '2019-02-01', NULL, 1299, 100, 4, DEFAULT, DEFAULT);
 INSERT INTO `shopdb`.`products` (`id`, `name`, `picture`, `color`, `manufacture_date`, `description`, `price`, `amount`, `category_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'Mango 77055933-TO', 'pictures/clothes/Mango77055933-TO.jpg', 'BLUE', '2019-02-01', NULL, 1599, 200, 4, DEFAULT, DEFAULT);
-INSERT INTO `shopdb`.`products` (`id`, `name`, `picture`, `color`, `manufacture_date`, `description`, `price`, `amount`, `category_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'Tom Tailor tom04500014', 'pictures/clothestom_tailor19243430107.jpg', 'WHITE', '2020-05-01', NULL, 1549, 400, 4, DEFAULT, DEFAULT);
+INSERT INTO `shopdb`.`products` (`id`, `name`, `picture`, `color`, `manufacture_date`, `description`, `price`, `amount`, `category_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'Tom Tailor tom04500014', 'pictures/clothes/tom_tailor19243430107.jpg', 'WHITE', '2020-05-01', NULL, 1549, 400, 4, DEFAULT, DEFAULT);
 INSERT INTO `shopdb`.`products` (`id`, `name`, `picture`, `color`, `manufacture_date`, `description`, `price`, `amount`, `category_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'Leo Pride KR3111', 'pictures/clothes/leo_pride_2000660001481.jpg', 'BLACK', '2018-08-01', NULL, 1199, 89, 4, DEFAULT, DEFAULT);
 
 COMMIT;

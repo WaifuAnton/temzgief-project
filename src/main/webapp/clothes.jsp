@@ -23,7 +23,7 @@
     <%String name = category.getName().toLowerCase();%>
     <tr>
         <td><img src='<%=category.getPicture()%>' height="200" alt='<%=name + " picture"%>'></td>
-        <td><a href='<%=name + ".jsp"%>'><fmt:message key='<%="category.clothes." + name%>'/></a></td>
+        <td><a href='<%="controller?action=" + name%>'><fmt:message key='<%="category.clothes." + name%>'/></a></td>
     </tr>
     <%}%>
 </table>

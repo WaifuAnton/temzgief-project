@@ -26,15 +26,10 @@ public class ProductsWomenService implements Service {
             page = Integer.parseInt(pageParam);
         long pagesCount;
         try {
-            Long pagesReq = (Long) request.getAttribute("pagesCount");
-            if (pagesReq == null) {
-                pagesCount = (long) Math.ceil((double) productDao.count() / Constants.PRODUCT_LIMIT);
-                request.setAttribute("pagesCount", pagesCount);
-            }
-            else
-                pagesCount = pagesReq;
-            List<Product> products = productDao.findLimitedByCategoryName("women", page - 1);
-            request.setAttribute("productsLim", products);
+            pagesCount = (long) Math.ceil((double) productDao.count() / Constants.PRODUCT_LIMIT);
+            request.setAttribute("pagesCount", pagesCount);
+            List<Product> products = productDao.findLimitedByCategoryName("women", (page - 1) * Constants.PRODUCT_LIMIT);
+            request.setAttribute("productsWomen", products);
             return "women.jsp";
         }
         catch (SQLException throwables) {
