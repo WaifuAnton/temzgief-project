@@ -10,7 +10,7 @@ public final class Constants {
 
     public static final String DATABASE_TYPE = DatabasePropertyReader.readType();
     public static final String MYSQL = "mysql";
-    public static final int PRODUCT_LIMIT = 10;
+    public static final int PRODUCT_LIMIT = 2;
     public static final String H2 = "h2";
 
     public static final String RANDOM_ALGORITHM = "SHA1PRNG";

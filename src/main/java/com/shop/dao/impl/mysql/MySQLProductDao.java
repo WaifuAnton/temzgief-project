@@ -33,6 +33,26 @@ public class MySQLProductDao implements ProductDao {
     }
 
     @Override
+    public List<Product> findLimitedByCategoryName(String categoryName, int offset) throws SQLException {
+        List<Product> products;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement categoryStatement = connection.prepareStatement("SELECT ID FROM CATEGORIES WHERE NAME = ?");
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS WHERE CATEGORY_ID = ? LIMIT ?, ?")) {
+            categoryStatement.setString(1, categoryName);
+            long id = 0;
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next())
+                    id = resultSet.getLong(1);
+            }
+            statement.setLong(1, id);
+            statement.setInt(3, Constants.PRODUCT_LIMIT);
+            statement.setInt(2, offset);
+            products = createProductsFromStatement(connection, statement);
+        }
+        return products;
+    }
+
+    @Override
     public List<Product> findLimited(int offset) throws SQLException {
         List<Product> products;
         try (Connection connection = dataSource.getConnection();
@@ -42,6 +62,18 @@ public class MySQLProductDao implements ProductDao {
             products = createProductsFromStatement(connection, statement);
         }
         return products;
+    }
+
+    @Override
+    public long count() throws SQLException {
+        long count = 0;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM PRODUCTS");
+             ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next())
+                count = resultSet.getLong(1);
+        }
+        return count;
     }
 
     @Override
@@ -68,7 +100,7 @@ public class MySQLProductDao implements ProductDao {
     @Override
     public void insert(Product element) throws SQLException {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("INSERT INTO PRODUCTS (NAME, PICTURE, COLOR, DESCRIPTION, PRICE, AMOUNT, CATEGORY_ID) VALUES (?, ?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO PRODUCTS (NAME, PICTURE, COLOR, DESCRIPTION, PRICE, AMOUNT, CATEGORY_ID, MANUFACTURE_DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
             insertOrUpdate(element, statement);
             try (ResultSet resultSet = statement.getGeneratedKeys()) {
                 if (resultSet.next())
@@ -80,7 +112,7 @@ public class MySQLProductDao implements ProductDao {
     @Override
     public void update(Product element) throws SQLException {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("UPDATE PRODUCTS SET NAME = ?, PICTURE = ?, COLOR = ?, DESCRIPTION = ?, PRICE = ?, AMOUNT = ?, CATEGORY_ID = ? WHERE ID = ?")) {
+             PreparedStatement statement = connection.prepareStatement("UPDATE PRODUCTS SET NAME = ?, PICTURE = ?, COLOR = ?, DESCRIPTION = ?, PRICE = ?, AMOUNT = ?, CATEGORY_ID = ?, MANUFACTURE_DATE = ? WHERE ID = ?")) {
             statement.setLong(8, element.getId());
             insertOrUpdate(element, statement);
         }
@@ -103,6 +135,7 @@ public class MySQLProductDao implements ProductDao {
         statement.setDouble(5, element.getPrice());
         statement.setInt(6, element.getAmount());
         statement.setLong(7, element.getCategory().getId());
+        statement.setDate(8, new java.sql.Date(element.getManufactureDate().getTime()));
         statement.execute();
     }
 
@@ -134,6 +167,7 @@ public class MySQLProductDao implements ProductDao {
         product.setName(resultSet.getString("name"));
         product.setPicture(resultSet.getString("picture"));
         product.setColor(Color.valueOf(resultSet.getString("color").toUpperCase()));
+        product.setManufactureDate(new Date(resultSet.getDate("manufacture_date").getTime()));
         product.setDescription(resultSet.getString("description"));
         product.setPrice(resultSet.getDouble("price"));
         product.setAmount(resultSet.getInt("amount"));

@@ -65,10 +65,11 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `shopdb`.`products` ;
 
 CREATE TABLE IF NOT EXISTS `shopdb`.`products` (
-  `id` BIGINT(10) UNSIGNED NOT NULL,
+  `id` BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(256) NOT NULL,
   `picture` VARCHAR(128) NOT NULL,
   `color` VARCHAR(16) NOT NULL,
+  `manufacture_date` DATE NOT NULL,
   `description` VARCHAR(4096) NULL,
   `price` DOUBLE UNSIGNED NOT NULL,
   `amount` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -267,6 +268,19 @@ INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create
 INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'women', 'pictures/clothes/women.jpg', 2, DEFAULT, DEFAULT);
 INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'big', 'pictures/cars/big.png', 1, DEFAULT, DEFAULT);
 INSERT INTO `shopdb`.`categories` (`id`, `name`, `picture`, `parent_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'small', 'pictures/cars/small.png', 1, DEFAULT, DEFAULT);
+
+COMMIT;
+
+
+-- -----------------------------------------------------
+-- Data for table `shopdb`.`products`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `shopdb`;
+INSERT INTO `shopdb`.`products` (`id`, `name`, `picture`, `color`, `manufacture_date`, `description`, `price`, `amount`, `category_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'Mango 77072888-08', 'pictures/clothes/Mango77072888-08.jpg', 'WHITE', '2019-02-01', NULL, 1299, 100, 4, DEFAULT, DEFAULT);
+INSERT INTO `shopdb`.`products` (`id`, `name`, `picture`, `color`, `manufacture_date`, `description`, `price`, `amount`, `category_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'Mango 77055933-TO', 'pictures/clothes/Mango77055933-TO.jpg', 'BLUE', '2019-02-01', NULL, 1599, 200, 4, DEFAULT, DEFAULT);
+INSERT INTO `shopdb`.`products` (`id`, `name`, `picture`, `color`, `manufacture_date`, `description`, `price`, `amount`, `category_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'Tom Tailor tom04500014', 'pictures/clothestom_tailor19243430107.jpg', 'WHITE', '2020-05-01', NULL, 1549, 400, 4, DEFAULT, DEFAULT);
+INSERT INTO `shopdb`.`products` (`id`, `name`, `picture`, `color`, `manufacture_date`, `description`, `price`, `amount`, `category_id`, `create_date`, `last_update`) VALUES (DEFAULT, 'Leo Pride KR3111', 'pictures/clothes/leo_pride_2000660001481.jpg', 'BLACK', '2018-08-01', NULL, 1199, 89, 4, DEFAULT, DEFAULT);
 
 COMMIT;
 

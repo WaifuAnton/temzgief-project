@@ -9,6 +9,7 @@ public class Product {
     private String name;
     private String picture;
     private Color color;
+    private Date manufactureDate;
     private String description;
     private Double price;
     private Integer amount;
@@ -46,6 +47,14 @@ public class Product {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public Date getManufactureDate() {
+        return manufactureDate;
+    }
+
+    public void setManufactureDate(Date manufactureDate) {
+        this.manufactureDate = manufactureDate;
     }
 
     public String getDescription() {

@@ -122,4 +122,9 @@ public class MySQLAddressDao implements PageDao<Address> {
         }
         return addresses;
     }
+
+    @Override
+    public long count() throws SQLException {
+        return 0;
+    }
 }
