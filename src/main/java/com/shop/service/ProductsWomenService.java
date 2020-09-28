@@ -55,10 +55,37 @@ public class ProductsWomenService implements Service {
         request.setAttribute("page", page);
         long pagesCount;
         try {
-            pagesCount = (long) Math.ceil((double) productDao.count() / Constants.PRODUCT_LIMIT);
+            double[] minAndMax = productDao.minAndMaxPrice();
+            Double to = (Double) session.getAttribute("to");
+            if (request.getParameter("to") == null && to == null) {
+                to = minAndMax[1];
+                session.setAttribute("to", to);
+            }
+            else if (request.getParameter("to") != null && to == null) {
+                to = Double.parseDouble(request.getParameter("to"));
+                session.setAttribute("to", to);
+            }
+            else if (request.getParameter("to") != null && !request.getParameter("to").equals(to.toString())) {
+                to = Double.parseDouble(request.getParameter("to"));
+                session.setAttribute("to", to);
+            }
+            Double from = (Double) session.getAttribute("from");
+            if (request.getParameter("from") == null && from == null) {
+                from = minAndMax[0];
+                session.setAttribute("from", from);
+            }
+            else if (request.getParameter("from") != null && from == null) {
+                from = Double.parseDouble(request.getParameter("from"));
+                session.setAttribute("from", from);
+            }
+            else if (request.getParameter("from") != null && !request.getParameter("from").equals(from.toString())) {
+                from = Double.parseDouble(request.getParameter("from"));
+                session.setAttribute("from", from);
+            }
+            pagesCount = (long) Math.ceil((double) productDao.count(from, to) / Constants.PRODUCT_LIMIT);
             request.setAttribute("pagesCount", pagesCount);
             List<Product> products;
-            products = productDao.findLimitedByCategoryNameSortBy("women", sort, "desc".equals(order), (page - 1) * Constants.PRODUCT_LIMIT);
+            products = productDao.findLimitedByCategoryNameBetweenSortBy("women", sort, from, to, "desc".equals(order), (page - 1) * Constants.PRODUCT_LIMIT);
             request.setAttribute("productsWomen", products);
             return "women.jsp";
         }

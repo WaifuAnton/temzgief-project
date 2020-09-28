@@ -50,7 +50,7 @@ public class MySQLProductDao implements ProductDao {
     }
 
     @Override
-    public List<Product> findLimitedByCategoryNameSortBy(String categoryName, String field, boolean desc, int offset) throws SQLException {
+    public List<Product> findLimitedByCategoryNameBetweenSortBy(String categoryName, String field, double from, double to, boolean desc, int offset) throws SQLException {
         List<Product> products;
         List<String> allowedFields = Arrays.asList("price", "name", "manufacture_date");
         PreparedStatement statement = null;
@@ -59,7 +59,7 @@ public class MySQLProductDao implements ProductDao {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement categoryStatement = connection.prepareStatement("SELECT ID FROM CATEGORIES WHERE NAME = ?")) {
             categoryStatement.setString(1, categoryName);
-            StringBuilder sql = new StringBuilder("SELECT * FROM PRODUCTS WHERE CATEGORY_ID = ? ORDER BY " + field + ' ');
+            StringBuilder sql = new StringBuilder("SELECT * FROM PRODUCTS WHERE CATEGORY_ID = ? AND PRICE BETWEEN ? AND ? ORDER BY " + field + ' ');
             if (desc)
                 sql.append("DESC ");
             sql.append("LIMIT ?, ?");
@@ -70,8 +70,10 @@ public class MySQLProductDao implements ProductDao {
                     id = resultSet.getLong(1);
             }
             statement.setLong(1, id);
-            statement.setInt(3, Constants.PRODUCT_LIMIT);
-            statement.setInt(2, offset);
+            statement.setDouble(2, from);
+            statement.setDouble(3, to);
+            statement.setInt(5, Constants.PRODUCT_LIMIT);
+            statement.setInt(4, offset);
             products = createProductsFromStatement(connection, statement);
         }
         finally {
@@ -94,13 +96,16 @@ public class MySQLProductDao implements ProductDao {
     }
 
     @Override
-    public long count() throws SQLException {
+    public long count(double from, double to) throws SQLException {
         long count = 0;
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM PRODUCTS");
-             ResultSet resultSet = statement.executeQuery()) {
-            if (resultSet.next())
-                count = resultSet.getLong(1);
+             PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM PRODUCTS WHERE PRICE BETWEEN ? AND ?")) {
+            statement.setDouble(1, from);
+            statement.setDouble(2, to);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next())
+                    count = resultSet.getLong(1);
+            }
         }
         return count;
     }
@@ -154,6 +159,21 @@ public class MySQLProductDao implements ProductDao {
             statement.setLong(1, element.getId());
             statement.execute();
         }
+    }
+
+    @Override
+    public double[] minAndMaxPrice() throws SQLException {
+        double[] minAndMax = new double[2];
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement min = connection.prepareStatement("SELECT MIN(PRICE) FROM PRODUCTS");
+             PreparedStatement max = connection.prepareStatement("SELECT MAX(PRICE) FROM PRODUCTS");
+             ResultSet resultMin = min.executeQuery(); ResultSet resultMax = max.executeQuery()) {
+            if (resultMin.next())
+                minAndMax[0] = resultMin.getDouble(1);
+            if (resultMax.next())
+                minAndMax[1] = resultMax.getDouble(1);
+        }
+        return minAndMax;
     }
 
     private static void insertOrUpdate(Product element, PreparedStatement statement) throws SQLException {

@@ -8,5 +8,4 @@ import java.util.Optional;
 
 public interface PageDao<E> extends Dao<E> {
     List<E> findLimited(int offset) throws SQLException;
-    long count() throws SQLException;
 }

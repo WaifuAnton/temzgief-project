@@ -129,11 +129,6 @@ public class MySQLOrderDao implements OrderDao {
         return orders;
     }
 
-    @Override
-    public long count() throws SQLException {
-        return 0;
-    }
-
     static Order createOrderFromStatement(Connection connection, PreparedStatement statement) throws SQLException {
         Order order = null;
         try (ResultSet resultSet = statement.executeQuery()) {
