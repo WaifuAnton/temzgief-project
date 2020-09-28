@@ -35,10 +35,18 @@ public class ProductsWomenService implements Service {
             session.setAttribute("sort", sort);
         }
         String pageParam = request.getParameter("page");
-        String desc = (String) session.getAttribute("desc");
-        if (desc == null) {
-            desc = request.getParameter("desc");
-            session.setAttribute("desc", desc);
+        String order = (String) session.getAttribute("order");
+        if (request.getParameter("order") == null && order == null) {
+            order = "asc";
+            session.setAttribute("order", "asc");
+        }
+        else if (request.getParameter("order") != null && order == null) {
+            order = request.getParameter("order");
+            session.setAttribute("order", order);
+        }
+        else if (request.getParameter("order") != null && !request.getParameter("order").equals(order)) {
+            order = request.getParameter("order");
+            session.setAttribute("order", order);
         }
         if (pageParam == null)
             page = 1;
@@ -50,10 +58,8 @@ public class ProductsWomenService implements Service {
             pagesCount = (long) Math.ceil((double) productDao.count() / Constants.PRODUCT_LIMIT);
             request.setAttribute("pagesCount", pagesCount);
             List<Product> products;
-            products = productDao.findLimitedByCategoryNameSortBy("women", sort, "on".equals(desc), (page - 1) * Constants.PRODUCT_LIMIT);
+            products = productDao.findLimitedByCategoryNameSortBy("women", sort, "desc".equals(order), (page - 1) * Constants.PRODUCT_LIMIT);
             request.setAttribute("productsWomen", products);
-            session.setAttribute("sort", sort);
-            session.setAttribute("desc", desc);
             return "women.jsp";
         }
         catch (SQLException throwables) {

@@ -16,8 +16,8 @@
 </head>
 <body>
 <form method="post" action="controller?action=login">
-    <label><input type="email" name="email" size="10"/></label><br>
-    <label><input type="password" name="password" size="10" /></label><br>
+    <input type="email" name="email" size="10"/><br>
+    <input type="password" name="password" size="10" /><br>
     <input type="submit" value="${register}" />
 </form>
 <jstl:if test="${not empty requestScope.wrongEmailOrPassword}">

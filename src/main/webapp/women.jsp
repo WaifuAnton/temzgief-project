@@ -19,7 +19,8 @@
     <input type="radio" name="sort" value="name" <jstl:if test="${sessionScope.sort == 'name'}">checked</jstl:if>>Name<br>
     <input type="radio" name="sort" value="price" <jstl:if test="${sessionScope.sort == 'price'}">checked</jstl:if>>Price<br>
     <input type="radio" name="sort" value="manufacture_date" <jstl:if test="${sessionScope.sort == 'manufacture_date'}">checked</jstl:if>>Date<br>
-    <input type="checkbox" name="desc" <jstl:if test="${sessionScope.desc == 'on'}">checked</jstl:if>>Descending<br>
+    <input type="radio" name="order" value="asc" <jstl:if test="${sessionScope.order == 'asc'}">checked</jstl:if>>Ascending<br>
+    <input type="radio" name="order" value="desc" <jstl:if test="${sessionScope.order == 'desc'}">checked</jstl:if>>Descending<br>
     <input type="submit">
 </form>
 <table>
