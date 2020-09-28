@@ -52,7 +52,7 @@ public class MySQLProductDao implements ProductDao {
     @Override
     public List<Product> findLimitedByCategoryNameSortBy(String categoryName, String field, boolean desc, int offset) throws SQLException {
         List<Product> products;
-        List<String> allowedFields = Arrays.asList("price", "date", "name", "manufacture_date");
+        List<String> allowedFields = Arrays.asList("price", "name", "manufacture_date");
         PreparedStatement statement = null;
         if (!allowedFields.contains(field))
             throw new IllegalArgumentException("Field must be one of " + allowedFields);

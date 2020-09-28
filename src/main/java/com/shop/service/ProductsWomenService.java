@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -19,25 +20,40 @@ public class ProductsWomenService implements Service {
     @Override
     public String execute(HttpServletRequest request) {
         int page;
+        HttpSession session = request.getSession();
+        String sort = (String) session.getAttribute("sort");
+        if (request.getParameter("sort") == null && sort == null) {
+            sort = "name";
+            session.setAttribute("sort", sort);
+        }
+        else if (request.getParameter("sort") != null && sort == null) {
+            sort = request.getParameter("sort");
+            session.setAttribute("sort", sort);
+        }
+        else if (request.getParameter("sort") != null && !request.getParameter("sort").equals(sort)) {
+            sort = request.getParameter("sort");
+            session.setAttribute("sort", sort);
+        }
         String pageParam = request.getParameter("page");
-        String sort = request.getParameter("sort");
-        String desc = request.getParameter("desc");
+        String desc = (String) session.getAttribute("desc");
+        if (desc == null) {
+            desc = request.getParameter("desc");
+            session.setAttribute("desc", desc);
+        }
         if (pageParam == null)
             page = 1;
         else
             page = Integer.parseInt(pageParam);
+        request.setAttribute("page", page);
         long pagesCount;
         try {
             pagesCount = (long) Math.ceil((double) productDao.count() / Constants.PRODUCT_LIMIT);
             request.setAttribute("pagesCount", pagesCount);
             List<Product> products;
-            if (sort == null)
-                products = productDao.findLimitedByCategoryNameSortBy("women", "name", false, (page - 1) * Constants.PRODUCT_LIMIT);
-            else if (desc == null)
-                products = productDao.findLimitedByCategoryNameSortBy("women", sort, false, (page - 1) * Constants.PRODUCT_LIMIT);
-            else
-                products = productDao.findLimitedByCategoryNameSortBy("women", sort, Boolean.parseBoolean(desc), (page - 1) * Constants.PRODUCT_LIMIT);
+            products = productDao.findLimitedByCategoryNameSortBy("women", sort, "on".equals(desc), (page - 1) * Constants.PRODUCT_LIMIT);
             request.setAttribute("productsWomen", products);
+            session.setAttribute("sort", sort);
+            session.setAttribute("desc", desc);
             return "women.jsp";
         }
         catch (SQLException throwables) {
