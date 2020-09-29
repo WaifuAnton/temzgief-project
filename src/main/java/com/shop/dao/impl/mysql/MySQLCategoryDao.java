@@ -4,6 +4,7 @@ import com.shop.connection.ConnectionPool;
 import com.shop.connection.ConnectionPoolFactory;
 import com.shop.dao.CategoryDao;
 import com.shop.entity.Category;
+import com.shop.entity.Product;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
@@ -133,8 +134,15 @@ public class MySQLCategoryDao implements CategoryDao {
     }
 
     static void setUpFields(Connection connection, Category category, ResultSet resultSet) throws SQLException {
-        category.setId(resultSet.getLong("id"));
+        long id = resultSet.getLong("id");
+        category.setId(id);
         category.setName(resultSet.getString("name"));
+        List<Product> products;
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS WHERE CATEGORY_ID = ?")) {
+            statement.setLong(1, id);
+            products = MySQLProductDao.createProductsFromStatement(connection, statement);
+        }
+        category.setProducts(products);
         category.setPicture(resultSet.getString("picture"));
         category.setParentCategory(getById(connection, resultSet.getLong("parent_id")).orElse(null));
         category.setCreateDate(new Date(resultSet.getTimestamp("create_date").getTime()));
