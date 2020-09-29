@@ -5,6 +5,7 @@ import com.shop.connection.ConnectionPoolFactory;
 import com.shop.dao.CategoryDao;
 import com.shop.entity.Category;
 import com.shop.entity.Product;
+import com.shop.enumeration.Color;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
@@ -137,10 +138,23 @@ public class MySQLCategoryDao implements CategoryDao {
         long id = resultSet.getLong("id");
         category.setId(id);
         category.setName(resultSet.getString("name"));
-        List<Product> products;
+        List<Product> products = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS WHERE CATEGORY_ID = ?")) {
             statement.setLong(1, id);
-            products = MySQLProductDao.createProductsFromStatement(connection, statement);
+            try (ResultSet resultSet1 = statement.executeQuery()) {
+                while (resultSet1.next()) {
+                    Product product = new Product();
+                    product.setCategory(category);
+                    product.setId(resultSet1.getLong("id"));
+                    product.setManufactureDate(resultSet1.getDate("manufacture_date"));
+                    product.setAmount(resultSet1.getInt("amount"));
+                    product.setPrice(resultSet1.getDouble("price"));
+                    product.setDescription(resultSet1.getString("description"));
+                    product.setColor(Color.valueOf(resultSet1.getString("color").toUpperCase()));
+                    product.setPicture(resultSet1.getString("picture"));
+                    products.add(product);
+                }
+            }
         }
         category.setProducts(products);
         category.setPicture(resultSet.getString("picture"));
