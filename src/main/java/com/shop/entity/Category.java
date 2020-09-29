@@ -1,12 +1,14 @@
 package com.shop.entity;
 
 import java.util.Date;
+import java.util.List;
 
 public class Category {
     private Long id;
     private String name;
     private String picture;
     private Category parentCategory;
+    private List<Product> products;
     private Date createDate;
     private Date lastUpdate;
 
@@ -40,6 +42,14 @@ public class Category {
 
     public void setParentCategory(Category parentCategory) {
         this.parentCategory = parentCategory;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
     public Date getCreateDate() {
